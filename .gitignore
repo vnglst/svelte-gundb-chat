@@ -1,3 +1,4 @@
 # Local Netlify folder
 .netlify
 radata
+public/build

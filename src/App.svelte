@@ -129,8 +129,8 @@
   }
 </style>
 
-<main>
-  {#if !$user}
+{#if !$user}
+  <main in:fade out:fade>
     <h1 id="name-label">Enter your name</h1>
     <form
       class="user-input"
@@ -146,7 +146,9 @@
         class="user-input" />
       <input class="submit" type="submit" value="Send" in:fade out:fade />
     </form>
-  {:else}
+  </main>
+{:else}
+  <main in:fade out:fade>
     <h1>To: {others}</h1>
     <div class="scrollable" bind:this={div}>
       {#each $store as val (val.msgId)}
@@ -184,5 +186,5 @@
         <input class="submit" type="submit" value="Send" in:fade out:fade />
       {/if}
     </form>
-  {/if}
-</main>
+  </main>
+{/if}
