@@ -105,13 +105,13 @@
   }
 
   .submit-form {
-    margin: 0 0.7em 0 0;
+    margin: 0 1em 0 0;
     position: relative;
   }
 
   .submit {
     position: absolute;
-    top: 0.3em;
+    top: 0.4em;
     right: 0.3em;
     width: 1.5em;
     height: 1.5em;

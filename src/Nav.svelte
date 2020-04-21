@@ -22,6 +22,7 @@
     padding: 0.5em 0;
     display: flex;
     border-bottom: 1px solid #eee;
+    min-height: 40px;
   }
 
   h1 {

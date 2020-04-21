@@ -15,7 +15,7 @@
 
   .submit {
     position: absolute;
-    top: 0.3em;
+    top: 0.4em;
     right: 0.3em;
     width: 1.5em;
     height: 1.5em;
