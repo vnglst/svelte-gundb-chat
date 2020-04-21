@@ -1,3 +1,4 @@
 .netlify
 radata
 public/build
+node_modules
