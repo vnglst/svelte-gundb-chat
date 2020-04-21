@@ -35,7 +35,7 @@
 
   form {
     margin: auto 0;
-    padding: 1em;
+    padding: 2em;
   }
 
   label {

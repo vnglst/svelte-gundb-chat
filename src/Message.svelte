@@ -105,6 +105,7 @@
   }
 
   .submit-form {
+    margin: 0 0.7em 0 0;
     position: relative;
   }
 
@@ -159,10 +160,11 @@
   <form
     class="submit-form"
     method="get"
-    on:submit|preventDefault={() => {
+    on:submit|preventDefault={e => {
       if (!msgInput) return;
       $store = { msg: msgInput, user: $user };
       msgInput = '';
+      e.target.msg.focus();
     }}>
     <input class="msg-input" type="text" name="msg" bind:value={msgInput} />
     {#if msgInput}
