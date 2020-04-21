@@ -13,7 +13,7 @@ function removeByMsgId(array, msgId) {
 function createStore() {
   const gun = new Gun([
     // "http://localhost:8765/gun",
-    "http://phrassed.com/gun",
+    "https://phrassed.com/gun",
     "https://gunjs.herokuapp.com/gun",
   ]);
 

@@ -15,7 +15,7 @@
     "rollup-plugin-svelte": "^5.0.3",
     "rollup-plugin-terser": "^5.1.2",
     "rollup": "^1.20.0",
-    "svelte": "^3.0.0"
+    "svelte": "^3.20.1"
   },
   "dependencies": {
     "gun": "0.2019.425",
