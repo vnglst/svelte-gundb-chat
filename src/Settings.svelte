@@ -5,36 +5,15 @@
   import { flip } from "svelte/animate";
   import Page from "./Page.svelte";
   import Nav from "./Nav.svelte";
+  import Input from "./Input.svelte";
 </script>
 
 <style>
-  input {
-    padding: 0.5em;
-    border-radius: 1em;
-  }
-
-  .submit {
-    position: absolute;
-    top: 0.4em;
-    right: 0.3em;
-    width: 1.5em;
-    height: 1.5em;
-    background: no-repeat 50% 50% url(/up.svg);
-    background-size: 0.75em;
-    border: none;
-    border-radius: 50%;
-    background-color: #0074d9;
-    text-indent: -9999px;
-    cursor: pointer;
-  }
-
-  .user-input {
-    position: relative;
-    width: 100%;
+  main {
+    margin: auto 0;
   }
 
   form {
-    margin: auto 0;
     padding: 2em;
   }
 
@@ -42,26 +21,48 @@
     padding: 1em;
     font-size: 14px;
   }
+
+  footer {
+    color: grey;
+    margin: 4rem 0 1rem 0;
+    font-size: 10px;
+    text-align: center;
+  }
+
+  span {
+    color: red;
+  }
 </style>
 
-<Page>
-  <Nav>Settings</Nav>
-  <form
-    on:submit|preventDefault={e => {
-      if (!$user) return;
-      $nav = 'messages';
-    }}>
-    <label id="name-label">ENTER YOUR NICKNAME</label>
-    <div class="user-input">
-      <input
+<Page reverse>
+  <Nav>Signin</Nav>
+
+  <main>
+    <form
+      on:submit|preventDefault={e => {
+        if (!$user) return;
+        $nav = 'messages';
+      }}>
+      <label id="name-label">ENTER YOUR NICKNAME</label>
+      <Input
+        bind:value={$user}
         placeholder="Steve Jobs"
-        aria-labelledby="name-label"
-        name="user"
-        class="user-input"
-        bind:value={$user} />
-      {#if $user}
-        <input class="submit" type="submit" value="Send" in:fade out:fade />
-      {/if}
-    </div>
-  </form>
+        ariaLabelledBy="name-label" />
+    </form>
+  </main>
+
+  <footer>
+    Made with
+    <span>♥️</span>
+    by
+    <a href="https://koenvangilst.nl">Koen van Gilst</a>
+    <br />
+    Using
+    <a href="https://svelte.dev/">svelte</a>
+    and
+    <a href="https://gun.eco/">gunDB</a>
+    see
+    <a href="https://github.com/vnglst/svelte-gundb-chat">Github</a>
+  </footer>
+
 </Page>

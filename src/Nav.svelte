@@ -4,33 +4,35 @@
 </script>
 
 <style>
+  nav {
+    position: relative;
+    margin: 0;
+    padding: 1em 0;
+    display: flex;
+    border-bottom: 1px solid #eee;
+    background-color: white;
+  }
   button {
+    position: absolute;
+    left: 0.5em;
+    top: 1em;
     border: none;
     background-color: transparent;
-    margin: 0;
     padding: 0;
     color: #0074d9;
   }
-
   button:hover {
     transition: 0.75s cubic-bezier(0, 1.2, 0.2, 1.5);
     transform: scale(1.3);
   }
 
-  .nav {
-    margin: 0;
-    padding: 0.5em 0;
-    display: flex;
-    border-bottom: 1px solid #eee;
-    min-height: 40px;
-  }
-
   h1 {
     margin: 0 auto;
+    font-size: 2em;
   }
 </style>
 
-<div class="nav">
+<nav>
   {#if backTo}
     <button
       on:click={() => {
@@ -52,4 +54,4 @@
   <h1>
     <slot />
   </h1>
-</div>
+</nav>

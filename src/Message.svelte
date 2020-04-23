@@ -8,6 +8,7 @@
   import { store } from "./gun-store";
   import Page from "./Page.svelte";
   import Nav from "./Nav.svelte";
+  import Input from "./Input.svelte";
 
   let msgInput;
   let div;
@@ -46,6 +47,11 @@
 </script>
 
 <style>
+  main {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  }
   .scrollable {
     flex: 1 1 auto;
     margin: 0 0 0.5em 0;
@@ -94,36 +100,9 @@
     text-indent: -9999px;
     cursor: pointer;
   }
-
-  input {
-    padding: 0.5em;
-    border-radius: 1em;
-  }
-
-  .msg-input {
-    width: 100%;
-  }
-
   .submit-form {
-    margin: 0 1em 0 0;
-    position: relative;
+    padding: 0 1em;
   }
-
-  .submit {
-    position: absolute;
-    top: 0.4em;
-    right: 0.3em;
-    width: 1.5em;
-    height: 1.5em;
-    background: no-repeat 50% 50% url(/up.svg);
-    background-size: 0.75em;
-    border: none;
-    border-radius: 50%;
-    background-color: #0074d9;
-    text-indent: -9999px;
-    cursor: pointer;
-  }
-
   .meta {
     font-size: 10px;
     margin: 0.5em;
@@ -132,43 +111,48 @@
 
 <Page>
   <Nav backTo="settings">Messages</Nav>
-  <div class="scrollable" bind:this={div}>
-    {#each $store as val (val.msgId)}
-      <article
-        class:user={val.user === $user}
-        animate:flip
-        in:receive={{ key: val.msgId }}
-        out:fade>
-        <div class="meta">
-          <span class="time">{new Date(val.time).toLocaleString('en-US')}</span>
-          <span class="user">{val.user}</span>
-        </div>
-        <span class="msg">
-          {val.msg}
-          <button
-            class="delete"
-            on:click|preventDefault={e => {
-              store.delete(val.msgId);
-            }}>
-            delete
-          </button>
-        </span>
-      </article>
-    {/each}
-  </div>
+  <main>
+    <div class="scrollable" bind:this={div}>
+      {#each $store as val (val.msgId)}
+        <article
+          class:user={val.user === $user}
+          animate:flip
+          in:receive={{ key: val.msgId }}
+          out:fade>
+          <div class="meta">
+            <span class="time">
+              {new Date(val.time).toLocaleString('en-US')}
+            </span>
+            <span class="user">{val.user}</span>
+          </div>
+          <span class="msg">
+            {val.msg}
+            <button
+              class="delete"
+              on:click|preventDefault={() => {
+                store.delete(val.msgId);
+              }}>
+              delete
+            </button>
+          </span>
+        </article>
+      {/each}
+    </div>
 
-  <form
-    class="submit-form"
-    method="get"
-    on:submit|preventDefault={e => {
-      if (!msgInput) return;
-      $store = { msg: msgInput, user: $user };
-      msgInput = '';
-      e.target.msg.focus();
-    }}>
-    <input class="msg-input" type="text" name="msg" bind:value={msgInput} />
-    {#if msgInput}
-      <input class="submit" type="submit" value="Send" in:fade out:fade />
-    {/if}
-  </form>
+    <form
+      class="submit-form"
+      method="get"
+      on:submit|preventDefault={e => {
+        if (!msgInput) return;
+        $store = { msg: msgInput, user: $user };
+        msgInput = '';
+        e.target.msg.focus();
+      }}>
+      <Input
+        bind:value={msgInput}
+        placeholder="Message"
+        ariaLabel="Message"
+        name="msg" />
+    </form>
+  </main>
 </Page>
