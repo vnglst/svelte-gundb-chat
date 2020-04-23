@@ -68,7 +68,6 @@
     position: relative;
     line-height: 2;
     padding: 0.5em 2.5em 0.5em 2em;
-    user-select: none;
     background-color: #eee;
     border-radius: 1em 1em 1em 0;
   }
@@ -131,7 +130,8 @@
             <button
               class="delete"
               on:click|preventDefault={() => {
-                store.delete(val.msgId);
+                const yes = confirm('Are you sure?');
+                if (yes) store.delete(val.msgId);
               }}>
               delete
             </button>
