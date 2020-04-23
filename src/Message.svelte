@@ -51,11 +51,12 @@
     display: flex;
     height: 100%;
     flex-direction: column;
+    background-color: white;
   }
   .scrollable {
     flex: 1 1 auto;
     margin: 0 0 0.5em 0;
-    padding-right: 1em;
+    padding: 0 1em;
     overflow-y: auto;
   }
 
