@@ -98,6 +98,7 @@
     padding: 0.5em 2.5em 0.5em 2em;
     background-color: #eee;
     border-radius: 1em 1em 1em 0;
+    word-break: break-all;
   }
 
   .user {
