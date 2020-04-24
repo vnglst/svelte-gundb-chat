@@ -11,14 +11,8 @@
     display: flex;
     height: 100%;
     flex-direction: column;
-    max-width: 450px;
+    max-width: 640px;
     background-color: white;
-  }
-
-  @media (max-width: 640px) {
-    div {
-      max-width: 100%;
-    }
   }
 </style>
 

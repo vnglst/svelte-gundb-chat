@@ -35,8 +35,8 @@ function createStore() {
           user: val.user,
         });
 
-      // no more than 40 messages for now 😥
-      if (state.length > 40) state.shift();
+      // no more than 100 messages for now 😥
+      if (state.length > 100) state.shift();
 
       return state;
     });
