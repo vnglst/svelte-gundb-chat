@@ -20,11 +20,11 @@
   });
 
   afterUpdate(() => {
-    if (autoscroll) div.scrollTo(0, div.scrollHeight - 50);
+    if (autoscroll) div.scrollTo(0, div.scrollHeight + 150);
   });
 
   onMount(() => {
-    if (div) div.scrollTo(0, div.scrollHeight - 50);
+    if (div) div.scrollTo(0, div.scrollHeight + 50);
   });
 
   const [send, receive] = crossfade({
@@ -44,6 +44,34 @@
       };
     }
   });
+
+  function toHSL(str) {
+    const opts = {
+      hue: [60, 360],
+      sat: [75, 100],
+      lum: [70, 71]
+    };
+
+    function range(hash, min, max) {
+      const diff = max - min;
+      const x = ((hash % diff) + diff) % diff;
+      return x + min;
+    }
+
+    let hash = 0;
+    if (str === 0) return hash;
+
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      hash = hash & hash;
+    }
+
+    let h = range(hash, opts.hue[0], opts.hue[1]);
+    let s = range(hash, opts.sat[0], opts.sat[1]);
+    let l = range(hash, opts.lum[0], opts.lum[1]);
+
+    return `hsl(${h}, ${s}%, ${l}%)`;
+  }
 </script>
 
 <style>
@@ -101,7 +129,7 @@
     cursor: pointer;
   }
   .submit-form {
-    padding: 0 1em;
+    padding: 0 1em 0.5em 1em;
   }
   .meta {
     font-size: 10px;
@@ -125,7 +153,9 @@
             </span>
             <span class="user">{val.user}</span>
           </div>
-          <span class="msg">
+          <span
+            class="msg"
+            style="background-color: {val.user !== $user && toHSL(val.user)}">
             {val.msg}
             <button
               class="delete"

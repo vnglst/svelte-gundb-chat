@@ -43,7 +43,7 @@
   <input
     class="input"
     type="text"
-    maxlength="40"
+    maxlength="160"
     {name}
     bind:value
     aria-labelledby={ariaLabelledBy}
