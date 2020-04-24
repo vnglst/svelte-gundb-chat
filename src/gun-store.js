@@ -18,7 +18,7 @@ function createStore() {
   const gun = new Gun([
     // "http://localhost:8765/gun",
     "https://phrassed.com/gun",
-    "https://gunjs.herokuapp.com/gun",
+    // "https://gunjs.herokuapp.com/gun", // Don't use, unstable
   ]);
 
   const { subscribe, update } = writable([]);
