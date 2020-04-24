@@ -1,5 +1,9 @@
 import { writable } from "svelte/store";
-import Gun from "gun/gun";
+
+// TODO: start using regular release from Gun
+// once this fix merges: https://github.com/amark/gun/issues/922
+// import Gun from "gun/gun";
+import Gun from "./gun";
 
 function removeByMsgId(array, msgId) {
   for (let i in array) {
