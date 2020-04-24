@@ -95,8 +95,8 @@
   .msg {
     display: inline-block;
     position: relative;
-    line-height: 2;
-    padding: 0.25em 0.5em;
+    line-height: 1.8;
+    padding: 0.4em 1em;
     background-color: #eee;
     border-radius: 1em 1em 1em 0;
     hyphens: auto;
