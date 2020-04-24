@@ -11,11 +11,11 @@
     "@hapi/inert": "^6.0.1",
     "@rollup/plugin-commonjs": "^11.0.0",
     "@rollup/plugin-node-resolve": "^7.0.0",
-    "rollup": "^1.20.0",
+    "rollup": "^2.7.2",
     "rollup-plugin-livereload": "^1.0.0",
     "rollup-plugin-svelte": "^5.0.3",
     "rollup-plugin-terser": "^5.1.2",
-    "svelte": "^3.20.1"
+    "svelte": "^3.21.0"
   },
   "dependencies": {
     "gun": "0.2020.421",
