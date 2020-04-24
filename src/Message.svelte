@@ -16,15 +16,15 @@
 
   beforeUpdate(() => {
     autoscroll =
-      div && div.offsetHeight + div.scrollTop < div.scrollHeight + 50;
+      div && div.offsetHeight + div.scrollTop > div.scrollHeight - 50;
   });
 
   afterUpdate(() => {
-    if (autoscroll) div.scrollTo(0, div.scrollHeight + 150);
+    if (autoscroll) div.scrollTo(0, div.scrollHeight);
   });
 
   onMount(() => {
-    if (div) div.scrollTo(0, div.scrollHeight + 50);
+    if (div) div.scrollTo(0, div.scrollHeight);
   });
 
   const [send, receive] = crossfade({
@@ -83,7 +83,7 @@
   }
   .scrollable {
     flex: 1 1 auto;
-    margin: 0 0 0.5em 0;
+    margin: 0;
     padding: 0 1em;
     overflow-y: auto;
   }
@@ -93,12 +93,14 @@
   }
 
   .msg {
+    display: inline-block;
     position: relative;
     line-height: 2;
-    padding: 0.5em 2.5em 0.5em 2em;
+    padding: 0.25em 0.5em;
     background-color: #eee;
     border-radius: 1em 1em 1em 0;
-    word-break: break-all;
+    hyphens: auto;
+    word-break: break-word;
   }
 
   .user {
@@ -106,6 +108,7 @@
   }
 
   .user > .msg {
+    margin-left: 4em;
     background-color: #0074d9;
     color: white;
     border-radius: 1em 1em 0 1em;
@@ -154,7 +157,7 @@
             </span>
             <span class="user">{val.user}</span>
           </div>
-          <span
+          <div
             class="msg"
             style="background-color: {val.user !== $user && toHSL(val.user)}">
             {val.msg}
@@ -166,7 +169,7 @@
               }}>
               delete
             </button>
-          </span>
+          </div>
         </article>
       {/each}
     </div>
