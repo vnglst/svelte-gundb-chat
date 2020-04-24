@@ -83,7 +83,7 @@
   }
   .scrollable {
     flex: 1 1 auto;
-    margin: 0;
+    margin: 0.5em 0;
     padding: 0.5em 1em;
     overflow-y: auto;
   }
