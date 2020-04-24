@@ -22,7 +22,7 @@ function createStore() {
   ]);
 
   const { subscribe, update } = writable([]);
-  const chats = gun.get("chats");
+  const chats = gun.get("chats-v2"); // "chats" was bombed to death
 
   chats.map().on((val, msgId) => {
     update((state) => {
