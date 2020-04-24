@@ -5,11 +5,15 @@
 </script>
 
 <style>
-  div {
-    margin: 0 auto;
-    width: 100vw;
-    display: flex;
+  .animation {
+    position: absolute;
     height: 100%;
+    width: 100vw;
+  }
+  .container {
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
     flex-direction: column;
     max-width: 640px;
     background-color: white;
@@ -18,7 +22,10 @@
 </style>
 
 <div
+  class="animation"
   in:fly={{ x: reverse ? -200 : 200, duration: 100 }}
   out:fly={{ x: reverse ? -200 : 200, duration: 100 }}>
-  <slot />
+  <div class="container">
+    <slot />
+  </div>
 </div>
