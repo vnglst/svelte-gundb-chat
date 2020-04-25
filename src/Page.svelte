@@ -17,7 +17,7 @@
     flex-direction: column;
     max-width: 640px;
     background-color: white;
-    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.1);
   }
 </style>
 

@@ -11,20 +11,22 @@
   import Input from "./Input.svelte";
 
   let msgInput;
-  let div;
+  let main;
+  let form;
   let autoscroll;
 
   beforeUpdate(() => {
     autoscroll =
-      div && div.offsetHeight + div.scrollTop > div.scrollHeight - 50;
+      main && main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
   });
 
   afterUpdate(() => {
-    if (autoscroll) div.scrollTo(0, div.scrollHeight);
+    if (autoscroll) main.scrollTo(0, main.scrollHeight);
   });
 
   onMount(() => {
-    if (div) div.scrollTo(0, div.scrollHeight);
+    if (main) main.scrollTo(0, main.scrollHeight);
+    if (form) form.scrollIntoView(true);
   });
 
   const [send, receive] = crossfade({
@@ -89,7 +91,11 @@
   }
 
   article {
-    margin: 1.5em 0;
+    margin: 1em 0;
+  }
+  .meta {
+    font-size: 10px;
+    margin: 0.5em;
   }
 
   .msg {
@@ -135,61 +141,63 @@
   .submit-form {
     padding: 0 1em 0.5em 1em;
   }
-  .meta {
-    font-size: 10px;
-    margin: 0.5em;
-  }
 </style>
 
 <Page>
   <Nav backTo="settings">Messages</Nav>
+
   <main>
-    <div class="scrollable" bind:this={div}>
-      {#each $store as val (val.msgId)}
-        <article
-          class:user={val.user === $user}
-          animate:flip
-          in:receive={{ key: val.msgId }}
-          out:fade>
-          <div class="meta">
-            <span class="time">
-              {new Date(val.time).toLocaleString('en-US')}
-            </span>
-            <span class="user">{val.user}</span>
-          </div>
-          <div
-            class="msg"
-            style="background-color: {val.user !== $user && toHSL(val.user)}">
-            {val.msg}
-            <button
-              class="delete"
-              on:click|preventDefault={() => {
-                const yes = confirm('Are you sure?');
-                if (yes) store.delete(val.msgId);
-              }}>
-              delete
-            </button>
-          </div>
-        </article>
-      {/each}
-    </div>
+    <main>
+      <div class="scrollable" bind:this={main}>
+        {#each $store as val (val.msgId)}
+          <article
+            class:user={val.user === $user}
+            animate:flip
+            in:receive={{ key: val.msgId }}
+            out:fade>
+            <div class="meta">
+              <span class="time">
+                {new Date(val.time).toLocaleString('en-US')}
+              </span>
+              <span class="user">{val.user}</span>
+            </div>
+            <div
+              class="msg"
+              style="background-color: {val.user !== $user && toHSL(val.user)}">
+              {val.msg}
+              <button
+                class="delete"
+                on:click|preventDefault={() => {
+                  const yes = confirm('Are you sure?');
+                  if (yes) store.delete(val.msgId);
+                }}>
+                delete
+              </button>
+            </div>
+          </article>
+        {/each}
+      </div>
 
-    <form
-      class="submit-form"
-      method="get"
-      autocomplete="off"
-      on:submit|preventDefault={e => {
-        if (!msgInput) return;
-        $store = { msg: msgInput, user: $user };
-        msgInput = '';
-        e.target.msg.focus();
-      }}>
-      <Input
-        bind:value={msgInput}
-        placeholder="Message"
-        ariaLabel="Message"
-        name="msg" />
-    </form>
-
+      <form
+        bind:this={form}
+        class="submit-form"
+        method="get"
+        autocomplete="off"
+        on:submit|preventDefault>
+        <Input
+          on:submit={e => {
+            if (!msgInput) return;
+            $store = { msg: msgInput, user: $user };
+            msgInput = '';
+            main.scrollTo(0, main.scrollHeight);
+          }}
+          refocus={true}
+          maxLines={3}
+          bind:value={msgInput}
+          name="msg"
+          placeholder="Message"
+          ariaLabel="Message" />
+      </form>
+    </main>
   </main>
 </Page>

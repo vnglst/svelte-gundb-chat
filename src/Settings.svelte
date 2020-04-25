@@ -39,14 +39,15 @@
   <Nav>Signin</Nav>
 
   <main>
-    <form
-      on:submit|preventDefault={e => {
-        if (!$user) return;
-        $nav = 'messages';
-      }}>
+    <form on:submit|preventDefault>
       <label id="name-label">ENTER YOUR NICKNAME</label>
       <Input
+        on:submit={e => {
+          if (!$user) return;
+          $nav = 'messages';
+        }}
         bind:value={$user}
+        maxLength="50"
         placeholder="Steve Jobs"
         ariaLabelledBy="name-label" />
     </form>

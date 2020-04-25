@@ -7,9 +7,30 @@
   export let placeholder = null;
   export let value = "";
   export let name = null;
+  export let maxLength = 160;
+  export let maxLines = 1;
+  export let refocus = false;
+
+  $: rows = Math.min(maxLines, Math.floor(value.length / 40) + 1);
+
+  let textarea;
 
   const dispatch = createEventDispatcher();
+
   const submit = () => dispatch("submit");
+
+  function handleKeydown(e) {
+    if (e.keyCode === 13) {
+      if (!value) return;
+      e.preventDefault();
+      handleSubmit();
+    }
+  }
+
+  function handleSubmit() {
+    dispatch("submit");
+    if (refocus) textarea.focus();
+  }
 </script>
 
 <style>
@@ -18,9 +39,10 @@
   }
 
   .input {
-    padding: 0.6em;
+    padding: 0.6em 2em 0.6em 0.6em;
     border-radius: 1em;
     width: 100%;
+    resize: none;
   }
 
   .input:focus {
@@ -45,12 +67,15 @@
 </style>
 
 <div class="input-with-button">
-  <input
+  <textarea
+    bind:this={textarea}
+    {rows}
     class="input"
     type="text"
-    maxlength="160"
+    {maxLength}
     {name}
     bind:value
+    on:keydown={handleKeydown}
     aria-labelledby={ariaLabelledBy}
     aria-label={ariaLabel}
     {placeholder} />
@@ -59,8 +84,8 @@
       class="submit"
       type="submit"
       value="Send"
-      on:click={submit}
       in:fade
-      out:fade />
+      out:fade
+      on:click={handleSubmit} />
   {/if}
 </div>
