@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 
 function createUser() {
-  const initialUser = JSON.parse(sessionStorage.getItem("chat_user"));
+  const initialUser = JSON.parse(sessionStorage.getItem("chat_user")) || "";
 
   const { subscribe, update, set } = writable(initialUser);
 
