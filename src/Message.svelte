@@ -83,7 +83,7 @@
   }
   .scrollable {
     flex: 1 1 auto;
-    margin: 0.5em 0;
+    margin: 0 0 0.5em 0;
     padding: 0.5em 1em;
     overflow-y: auto;
   }
@@ -177,6 +177,7 @@
     <form
       class="submit-form"
       method="get"
+      autocomplete="off"
       on:submit|preventDefault={e => {
         if (!msgInput) return;
         $store = { msg: msgInput, user: $user };

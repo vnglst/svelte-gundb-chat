@@ -23,10 +23,15 @@
     width: 100%;
   }
 
+  .input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 116, 217, 0.5);
+  }
+
   .submit {
     position: absolute;
     top: 0.4em;
-    right: 0.3em;
+    right: 0.4em;
     width: 1.5em;
     height: 1.5em;
     background: no-repeat 50% 50% url(/up.svg);

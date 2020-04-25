@@ -80,3 +80,16 @@ button:not(:disabled):active {
 button:focus {
   border-color: #666;
 }
+
+.loading-bundle {
+  margin: 2em;
+  text-align: center;
+  opacity: 0;
+  animation: delay-opacity 1s 1s forwards;
+}
+
+@keyframes delay-opacity {
+  to {
+    opacity: 1;
+  }
+}

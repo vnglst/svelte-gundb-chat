@@ -3,9 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" />
+    <meta name="theme-color" content="#ffffff" />
 
     <title>Phrassed - Decentralized Chat App</title>
+    <meta
+      name="description"
+      content="Phrassed is a decentralized chat app build with modern web technology like gundb and svelte. 
+      It's meant as example and starter for others to show how easy you can accomplish this. "
+    />
 
+    <link href="manifest.json" rel="manifest" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="stylesheet" href="/global.css" />
     <link rel="stylesheet" href="/build/bundle.css" />
@@ -13,5 +23,9 @@
     <script defer src="/build/bundle.js"></script>
   </head>
 
-  <body></body>
+  <body>
+    <p class="loading-bundle">
+      Loading bundle... You need JavaScript for this.
+    </p>
+  </body>
 </html>

@@ -23,8 +23,8 @@
 
 <div
   class="animation"
-  in:fly={{ x: reverse ? -200 : 200, duration: 100 }}
-  out:fly={{ x: reverse ? -200 : 200, duration: 100 }}>
+  in:fly={{ x: reverse ? -200 : 200, duration: 500 }}
+  out:fly={{ x: reverse ? -200 : 200, duration: 500 }}>
   <div class="container">
     <slot />
   </div>
