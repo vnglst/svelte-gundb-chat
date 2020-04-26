@@ -1,6 +1,6 @@
 {
   "name": "svelte-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -19,7 +19,7 @@
     "svelte": "^3.21.0"
   },
   "dependencies": {
-    "gun": "0.2020.421",
+    "gun": "0.2019.425",
     "sirv-cli": "^0.4.4"
   }
 }
