@@ -114,6 +114,10 @@
     opacity: 0.5;
   }
 
+  .draft.user {
+    display: none;
+  }
+
   .user {
     text-align: right;
   }
