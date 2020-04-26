@@ -22,7 +22,7 @@ function createStore() {
 
   chats.map().on((val, msgId) => {
     update((state) => {
-      if (!val) {
+      if (!val || !val.msg) {
         removeByMsgId(state, msgId);
         return state;
       }
@@ -35,13 +35,19 @@ function createStore() {
           msg: val.msg,
           time: parseFloat(val.time),
           user: val.user,
+          draft: val.draft,
         };
-      } else if (val)
+
+        return state;
+      }
+
+      if (val)
         state.push({
           msgId,
           msg: val.msg,
           time: parseFloat(val.time),
           user: val.user,
+          draft: val.draft,
         });
 
       // no pagination yet, so can't render all the messages for now 😥
@@ -56,11 +62,12 @@ function createStore() {
     delete: (msgId) => {
       chats.get(msgId).put(null);
     },
-    set: ({ msg, user, msgId, time }) => {
+    set: ({ msg, user, msgId, time, draft }) => {
       chats.get(msgId).put({
         msg,
         user,
         time,
+        draft,
       });
     },
   };

@@ -110,6 +110,10 @@
     word-break: break-word;
   }
 
+  .draft {
+    opacity: 0.5;
+  }
+
   .user {
     text-align: right;
   }
@@ -167,6 +171,7 @@
     <div>
       {#each $store as val (val.msgId)}
         <article
+          class:draft={val.draft}
           class:user={val.user === $user}
           animate:flip
           in:receive={{ key: val.msgId }}
@@ -201,14 +206,14 @@
         on:submit={e => {
           if (!msgInput) return;
           time = new Date().getTime();
-          $store = { msg: msgInput, user: $user, msgId, time };
+          $store = { msg: msgInput, user: $user, msgId, time, draft: false };
           msgId = `${time}_${Math.random()}`;
           msgInput = '';
           main.scrollTo(0, main.scrollHeight);
         }}
         on:change={e => {
           time = new Date().getTime();
-          if (msgInput) $store = { msg: msgInput, user: $user, msgId, time };
+          $store = { msg: msgInput, user: $user, msgId, time, draft: true };
         }}
         disabled={$user ? false : true}
         refocus={true}
