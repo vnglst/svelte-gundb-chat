@@ -18,7 +18,7 @@ function createStore() {
   ]);
 
   const { subscribe, update } = writable([]);
-  const chats = gun.get("chats-live-typing"); // "chats" version 1 was message bombed to death
+  const chats = gun.get("chats-live-typing-v2"); // "chats" version 1 was message bombed to death
 
   chats.map().on((val, msgId) => {
     update((state) => {
