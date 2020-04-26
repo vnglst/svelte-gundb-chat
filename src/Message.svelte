@@ -14,6 +14,9 @@
   let main;
   let autoscroll;
 
+  let time = new Date().getTime();
+  let msgId = `${time}_${Math.random()}`;
+
   beforeUpdate(() => {
     autoscroll =
       main && main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
@@ -46,6 +49,8 @@
   });
 
   function toHSL(str) {
+    if (!str) return;
+
     const opts = {
       hue: [60, 360],
       sat: [75, 100],
@@ -195,9 +200,15 @@
       <Input
         on:submit={e => {
           if (!msgInput) return;
-          $store = { msg: msgInput, user: $user };
+          time = new Date().getTime();
+          $store = { msg: msgInput, user: $user, msgId, time };
+          msgId = `${time}_${Math.random()}`;
           msgInput = '';
           main.scrollTo(0, main.scrollHeight);
+        }}
+        on:change={e => {
+          time = new Date().getTime();
+          if (msgInput) $store = { msg: msgInput, user: $user, msgId, time };
         }}
         disabled={$user ? false : true}
         refocus={true}

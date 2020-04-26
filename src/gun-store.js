@@ -14,11 +14,11 @@ function createStore() {
   const gun = new Gun([
     // "http://localhost:8765/gun",
     "https://phrassed.com/gun",
-    "https://gunjs.herokuapp.com/gun", // Don't use, unstable
+    // "https://gunjs.herokuapp.com/gun", // Don't use, unstable
   ]);
 
   const { subscribe, update } = writable([]);
-  const chats = gun.get("chats-v2"); // "chats" version 1 was message bombed to death
+  const chats = gun.get("chats-live-typing"); // "chats" version 1 was message bombed to death
 
   chats.map().on((val, msgId) => {
     update((state) => {
@@ -27,7 +27,16 @@ function createStore() {
         return state;
       }
 
-      if (val)
+      const existingMsgIdx = state.findIndex((m) => m.msgId === msgId);
+
+      if (existingMsgIdx > -1) {
+        state[existingMsgIdx] = {
+          msgId,
+          msg: val.msg,
+          time: parseFloat(val.time),
+          user: val.user,
+        };
+      } else if (val)
         state.push({
           msgId,
           msg: val.msg,
@@ -47,9 +56,7 @@ function createStore() {
     delete: (msgId) => {
       chats.get(msgId).put(null);
     },
-    set: ({ msg, user }) => {
-      const time = new Date().getTime();
-      const msgId = `${time}_${Math.random()}`;
+    set: ({ msg, user, msgId, time }) => {
       chats.get(msgId).put({
         msg,
         user,

@@ -88,6 +88,7 @@
     {name}
     bind:value
     on:keydown={handleKeydown}
+    on:keyup={() => dispatch('change')}
     aria-labelledby={ariaLabelledBy}
     aria-label={ariaLabel}
     {placeholder} />
