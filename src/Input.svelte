@@ -12,7 +12,9 @@
   export let refocus = false;
   export let disabled = false;
 
-  $: rows = Math.min(maxLines, Math.floor(value.length / 40) + 1);
+  const CHARS_PER_LINE = 40;
+
+  $: rows = Math.min(maxLines, Math.floor(value.length / CHARS_PER_LINE) + 1);
 
   let textarea;
 

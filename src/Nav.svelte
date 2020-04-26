@@ -26,7 +26,7 @@
   }
   button:hover {
     transition: 0.75s cubic-bezier(0, 1.2, 0.2, 1.5);
-    transform: scale(1.3);
+    transform: scale(1.1);
   }
 
   span {
