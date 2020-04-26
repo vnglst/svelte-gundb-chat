@@ -1,6 +1,6 @@
 {
   "name": "svelte-app",
-  "version": "0.1.2",
+  "version": "0.1.3-alpha",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
