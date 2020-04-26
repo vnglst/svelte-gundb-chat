@@ -4,10 +4,6 @@
   import Messages from "./Message.svelte";
   import Settings from "./Settings.svelte";
   import Nav from "./Nav.svelte";
-
-  if (!$user) {
-    $nav = "settings";
-  }
 </script>
 
 {#if $nav === 'settings'}

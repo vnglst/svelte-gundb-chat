@@ -12,7 +12,6 @@
 
   let msgInput;
   let main;
-  let form;
   let autoscroll;
 
   beforeUpdate(() => {
@@ -26,7 +25,6 @@
 
   onMount(() => {
     if (main) main.scrollTo(0, main.scrollHeight);
-    if (form) form.scrollIntoView(true);
   });
 
   const [send, receive] = crossfade({
@@ -82,10 +80,8 @@
     height: 100%;
     flex-direction: column;
     background-color: white;
-  }
-  .scrollable {
     flex: 1 1 auto;
-    margin: 0 0 0.5em 0;
+    margin: 0 0 2.5em 0;
     padding: 0.5em 1em;
     overflow-y: auto;
   }
@@ -138,66 +134,78 @@
     text-indent: -9999px;
     cursor: pointer;
   }
-  .submit-form {
-    padding: 0 1em 0.5em 1em;
+
+  .form-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  form {
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    max-width: 640px;
+    background-color: white;
+    padding: 0.25em 1em;
   }
 </style>
 
 <Page>
-  <Nav backTo="settings">Messages</Nav>
+  <Nav backTo="settings" backText="Settings">Timeline</Nav>
 
-  <main>
-    <main>
-      <div class="scrollable" bind:this={main}>
-        {#each $store as val (val.msgId)}
-          <article
-            class:user={val.user === $user}
-            animate:flip
-            in:receive={{ key: val.msgId }}
-            out:fade>
-            <div class="meta">
-              <span class="time">
-                {new Date(val.time).toLocaleString('en-US')}
-              </span>
-              <span class="user">{val.user}</span>
-            </div>
-            <div
-              class="msg"
-              style="background-color: {val.user !== $user && toHSL(val.user)}">
-              {val.msg}
-              <button
-                class="delete"
-                on:click|preventDefault={() => {
-                  const yes = confirm('Are you sure?');
-                  if (yes) store.delete(val.msgId);
-                }}>
-                delete
-              </button>
-            </div>
-          </article>
-        {/each}
-      </div>
-
-      <form
-        bind:this={form}
-        class="submit-form"
-        method="get"
-        autocomplete="off"
-        on:submit|preventDefault>
-        <Input
-          on:submit={e => {
-            if (!msgInput) return;
-            $store = { msg: msgInput, user: $user };
-            msgInput = '';
-            main.scrollTo(0, main.scrollHeight);
-          }}
-          refocus={true}
-          maxLines={3}
-          bind:value={msgInput}
-          name="msg"
-          placeholder="Message"
-          ariaLabel="Message" />
-      </form>
-    </main>
+  <main bind:this={main}>
+    <div>
+      {#each $store as val (val.msgId)}
+        <article
+          class:user={val.user === $user}
+          animate:flip
+          in:receive={{ key: val.msgId }}
+          out:fade>
+          <div class="meta">
+            <span class="time">
+              {new Date(val.time).toLocaleString('en-US')}
+            </span>
+            <span class="user">{val.user}</span>
+          </div>
+          <div
+            class="msg"
+            style="background-color: {val.user !== $user && toHSL(val.user)}">
+            {val.msg}
+            <button
+              class="delete"
+              on:click|preventDefault={() => {
+                const yes = confirm('Are you sure?');
+                if (yes) store.delete(val.msgId);
+              }}>
+              delete
+            </button>
+          </div>
+        </article>
+      {/each}
+    </div>
   </main>
+
+  <div class="form-container">
+    <form method="get" autocomplete="off" on:submit|preventDefault>
+      <Input
+        on:submit={e => {
+          if (!msgInput) return;
+          $store = { msg: msgInput, user: $user };
+          msgInput = '';
+          main.scrollTo(0, main.scrollHeight);
+        }}
+        disabled={$user ? false : true}
+        refocus={true}
+        maxLines={3}
+        bind:value={msgInput}
+        name="msg"
+        placeholder="Message"
+        ariaLabel="Message" />
+    </form>
+  </div>
 </Page>

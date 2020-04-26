@@ -14,11 +14,11 @@ function createStore() {
   const gun = new Gun([
     // "http://localhost:8765/gun",
     "https://phrassed.com/gun",
-    // "https://gunjs.herokuapp.com/gun", // Don't use, unstable
+    "https://gunjs.herokuapp.com/gun", // Don't use, unstable
   ]);
 
   const { subscribe, update } = writable([]);
-  const chats = gun.get("chats-v2"); // "chats" was bombed to death
+  const chats = gun.get("chats-v2"); // "chats" version 1 was message bombed to death
 
   chats.map().on((val, msgId) => {
     update((state) => {
@@ -35,8 +35,8 @@ function createStore() {
           user: val.user,
         });
 
-      // no more than 100 messages for now 😥
-      if (state.length > 100) state.shift();
+      // no pagination yet, so can't render all the messages for now 😥
+      if (state.length > 200) state.shift();
 
       return state;
     });

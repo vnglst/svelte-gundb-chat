@@ -10,8 +10,11 @@
   export let maxLength = 160;
   export let maxLines = 1;
   export let refocus = false;
+  export let disabled = false;
 
-  $: rows = Math.min(maxLines, Math.floor(value.length / 40) + 1);
+  const CHARS_PER_LINE = 40;
+
+  $: rows = Math.min(maxLines, Math.floor(value.length / CHARS_PER_LINE) + 1);
 
   let textarea;
 
@@ -43,6 +46,14 @@
     border-radius: 1em;
     width: 100%;
     resize: none;
+    /* fix for firefox showing two rows, see: https://stackoverflow.com/questions/7695945/height-of-textarea-does-not-match-the-rows-in-firefox */
+    overflow-x: hidden;
+  }
+
+  .input:disabled {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==)
+      repeat;
+    cursor: not-allowed;
   }
 
   .input:focus {
@@ -68,6 +79,7 @@
 
 <div class="input-with-button">
   <textarea
+    {disabled}
     bind:this={textarea}
     {rows}
     class="input"
