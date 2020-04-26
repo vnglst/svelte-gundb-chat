@@ -15,6 +15,12 @@ body {
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
 a {
   color: rgb(0, 100, 200);
   text-decoration: none;
@@ -38,8 +44,8 @@ select,
 textarea {
   font-family: inherit;
   font-size: inherit;
-  padding: 0.4em;
-  margin: 0 0 0.5em 0;
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 2px;
