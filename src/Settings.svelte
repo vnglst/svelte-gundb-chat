@@ -36,7 +36,7 @@
 </style>
 
 <Page reverse>
-  <Nav>Signin</Nav>
+  <Nav>Sign In</Nav>
 
   <main>
     <form

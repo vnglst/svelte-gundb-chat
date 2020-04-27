@@ -157,7 +157,7 @@
 </style>
 
 <Page>
-  <Nav backTo="settings" backText="Signin">Timeline</Nav>
+  <Nav backTo="settings" backText="Sign In">Timeline</Nav>
 
   <main bind:this={main}>
     <div>
