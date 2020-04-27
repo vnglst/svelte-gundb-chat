@@ -46,6 +46,7 @@
   });
 
   function toHSL(str) {
+    if (!str) return;
     const opts = {
       hue: [60, 360],
       sat: [75, 100],
@@ -101,7 +102,21 @@
     padding: 0.4em 1em;
     background-color: #eee;
     border-radius: 1em 1em 1em 0;
-    hyphens: auto;
+
+    /* This makes sure returns are also rendered */
+    white-space: pre-wrap;
+
+    /* The trouble you have to go through to keep simple text inside it's div! 😆 */
+    /* Source: https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/ */
+
+    /* These are technically the same, but use both */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
     word-break: break-word;
   }
 
@@ -156,7 +171,7 @@
 </style>
 
 <Page>
-  <Nav backTo="settings" backText="Settings">Timeline</Nav>
+  <Nav backTo="settings" backText="Sign In">Timeline</Nav>
 
   <main bind:this={main}>
     <div>
@@ -191,17 +206,20 @@
   </main>
 
   <div class="form-container">
-    <form method="get" autocomplete="off" on:submit|preventDefault>
+    <form
+      method="get"
+      autocomplete="off"
+      on:submit|preventDefault={e => {
+        if (!msgInput || !msgInput.trim()) return;
+        $store = { msg: msgInput, user: $user };
+        msgInput = '';
+        main.scrollTo(0, main.scrollHeight);
+        e.target.msg.focus();
+      }}>
       <Input
-        on:submit={e => {
-          if (!msgInput) return;
-          $store = { msg: msgInput, user: $user };
-          msgInput = '';
-          main.scrollTo(0, main.scrollHeight);
-        }}
+        multiline={true}
         disabled={$user ? false : true}
-        refocus={true}
-        maxLines={3}
+        maxRows={3}
         bind:value={msgInput}
         name="msg"
         placeholder="Message"

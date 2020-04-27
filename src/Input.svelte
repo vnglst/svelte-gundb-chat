@@ -8,32 +8,21 @@
   export let value = "";
   export let name = null;
   export let maxLength = 160;
-  export let maxLines = 1;
-  export let refocus = false;
+  export let maxRows = 1;
   export let disabled = false;
+  export let multiline = false;
 
+  // TODO: kinda hacky, on desktop it's more that 40, but calculating chars per line is hard
   const CHARS_PER_LINE = 40;
 
-  $: rows = Math.min(maxLines, Math.floor(value.length / CHARS_PER_LINE) + 1);
-
-  let textarea;
-
-  const dispatch = createEventDispatcher();
-
-  const submit = () => dispatch("submit");
-
-  function handleKeydown(e) {
-    if (e.keyCode === 13) {
-      if (!value) return;
-      e.preventDefault();
-      handleSubmit();
-    }
+  function calcRows(v) {
+    let textRows = Math.floor(v.length / CHARS_PER_LINE) + 1;
+    const numberOfReturns = (v.match(/\n/g) || []).length;
+    textRows += numberOfReturns;
+    return Math.min(maxRows, textRows);
   }
 
-  function handleSubmit() {
-    dispatch("submit");
-    if (refocus) textarea.focus();
-  }
+  $: rows = calcRows(value);
 </script>
 
 <style>
@@ -46,7 +35,8 @@
     border-radius: 1em;
     width: 100%;
     resize: none;
-    /* fix for firefox showing two rows, see: https://stackoverflow.com/questions/7695945/height-of-textarea-does-not-match-the-rows-in-firefox */
+    /* fix for firefox showing two rows, see: 
+        https://stackoverflow.com/questions/7695945/height-of-textarea-does-not-match-the-rows-in-firefox */
     overflow-x: hidden;
   }
 
@@ -78,26 +68,32 @@
 </style>
 
 <div class="input-with-button">
-  <textarea
-    {disabled}
-    bind:this={textarea}
-    {rows}
-    class="input"
-    type="text"
-    {maxLength}
-    {name}
-    bind:value
-    on:keydown={handleKeydown}
-    aria-labelledby={ariaLabelledBy}
-    aria-label={ariaLabel}
-    {placeholder} />
-  {#if value}
+  {#if multiline}
+    <textarea
+      {disabled}
+      {rows}
+      class="input"
+      type="text"
+      {maxLength}
+      {name}
+      bind:value
+      aria-labelledby={ariaLabelledBy}
+      aria-label={ariaLabel}
+      {placeholder} />
+  {:else}
     <input
-      class="submit"
-      type="submit"
-      value="Send"
-      in:fade
-      out:fade
-      on:click={handleSubmit} />
+      {disabled}
+      {rows}
+      class="input"
+      type="text"
+      {maxLength}
+      {name}
+      bind:value
+      aria-labelledby={ariaLabelledBy}
+      aria-label={ariaLabel}
+      {placeholder} />
+  {/if}
+  {#if value}
+    <input class="submit" type="submit" value="Send" in:fade out:fade />
   {/if}
 </div>
