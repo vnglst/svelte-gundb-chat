@@ -118,12 +118,6 @@
     word-break: break-all;
     /* Instead use this non-standard one: */
     word-break: break-word;
-
-    /* Adds a hyphen where the word breaks, if supported (No Blink) */
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
   }
 
   .user {
