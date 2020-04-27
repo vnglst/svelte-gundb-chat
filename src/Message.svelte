@@ -46,6 +46,7 @@
   });
 
   function toHSL(str) {
+    if (!str) return;
     const opts = {
       hue: [60, 360],
       sat: [75, 100],
@@ -102,7 +103,7 @@
     background-color: #eee;
     border-radius: 1em 1em 1em 0;
     hyphens: auto;
-    word-break: break-word;
+    white-space: pre-wrap;
   }
 
   .user {
@@ -156,7 +157,7 @@
 </style>
 
 <Page>
-  <Nav backTo="settings" backText="Settings">Timeline</Nav>
+  <Nav backTo="settings" backText="Signin">Timeline</Nav>
 
   <main bind:this={main}>
     <div>
@@ -191,17 +192,20 @@
   </main>
 
   <div class="form-container">
-    <form method="get" autocomplete="off" on:submit|preventDefault>
+    <form
+      method="get"
+      autocomplete="off"
+      on:submit|preventDefault={e => {
+        if (!msgInput || !msgInput.trim()) return;
+        $store = { msg: msgInput, user: $user };
+        msgInput = '';
+        main.scrollTo(0, main.scrollHeight);
+        e.target.msg.focus();
+      }}>
       <Input
-        on:submit={e => {
-          if (!msgInput) return;
-          $store = { msg: msgInput, user: $user };
-          msgInput = '';
-          main.scrollTo(0, main.scrollHeight);
-        }}
+        multiline={true}
         disabled={$user ? false : true}
-        refocus={true}
-        maxLines={3}
+        maxRows={3}
         bind:value={msgInput}
         name="msg"
         placeholder="Message"
