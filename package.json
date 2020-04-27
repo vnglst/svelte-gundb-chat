@@ -1,6 +1,7 @@
 {
   "name": "svelte-app",
   "version": "0.2.0",
+  "license": "MIT",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
