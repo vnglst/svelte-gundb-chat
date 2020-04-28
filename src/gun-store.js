@@ -1,10 +1,10 @@
 import { writable } from "svelte/store";
 import Gun from "gun/gun";
 
-function removeByMsgId(array, msgId) {
-  for (let i in array) {
-    if (array[i].msgId == msgId) {
-      array.splice(i, 1);
+function removeById(arr, msgId) {
+  for (let i in arr) {
+    if (arr[i].msgId == msgId) {
+      arr.splice(i, 1);
       break;
     }
   }
@@ -18,43 +18,37 @@ function createStore() {
   ]);
 
   const { subscribe, update } = writable([]);
-  const chats = gun.get("chats-v2"); // "chats" version 1 was message bombed to death
+  const chats = gun.get("chats-v2"); // "chats" version 1 was "bombed" to death with too many large messages
 
-  chats.map().on((val, msgId) => {
+  chats.map().on((val, id) => {
     update((state) => {
       if (!val) {
-        removeByMsgId(state, msgId);
+        removeById(state, id);
         return state;
       }
 
       if (val)
         state.push({
-          msgId,
-          msg: val.msg,
-          time: parseFloat(val.time),
-          user: val.user,
+          msgId: id,
+          ...val,
         });
 
-      // no pagination yet, so can't render all the messages for now 😥
-      if (state.length > 200) state.shift();
+      // no pagination yet, failsafe to prevent rendering too many messages
+      if (state.length > 500) state.shift();
 
-      return state;
+      // sort messages based on creation time
+      return state.sort((a, b) => a.time - b.time);
     });
   });
 
   return {
     subscribe,
-    delete: (msgId) => {
-      chats.get(msgId).put(null);
+    delete: (id) => {
+      chats.get(id).put(null);
     },
-    set: ({ msg, user }) => {
-      const time = new Date().getTime();
-      const msgId = `${time}_${Math.random()}`;
-      chats.get(msgId).put({
-        msg,
-        user,
-        time,
-      });
+    set: (chat) => {
+      const id = Gun.text.random();
+      chats.get(id).put(chat);
     },
   };
 }

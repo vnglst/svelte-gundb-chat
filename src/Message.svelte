@@ -138,7 +138,7 @@
   button.delete {
     position: absolute;
     top: 0;
-    right: 0.2em;
+    left: -2em;
     width: 2em;
     height: 100%;
     background: no-repeat 50% 50% url(/trash.svg);
@@ -155,8 +155,6 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    margin: 0;
-    padding: 0;
   }
 
   form {
@@ -175,30 +173,32 @@
 
   <main bind:this={main}>
     <div>
-      {#each $store as val (val.msgId)}
+      {#each $store as chat (chat.msgId)}
         <article
-          class:user={val.user === $user}
+          class:user={chat.user === $user}
           animate:flip
-          in:receive={{ key: val.msgId }}
+          in:receive={{ key: chat.msgId }}
           out:fade>
           <div class="meta">
             <span class="time">
-              {new Date(val.time).toLocaleString('en-US')}
+              {new Date(parseFloat(chat.time)).toLocaleString('en-US')}
             </span>
-            <span class="user">{val.user}</span>
+            <span class="user">{chat.user}</span>
           </div>
           <div
             class="msg"
-            style="background-color: {val.user !== $user && toHSL(val.user)}">
-            {val.msg}
-            <button
-              class="delete"
-              on:click|preventDefault={() => {
-                const yes = confirm('Are you sure?');
-                if (yes) store.delete(val.msgId);
-              }}>
-              delete
-            </button>
+            style="background-color: {chat.user !== $user && toHSL(chat.user)}">
+            {chat.msg}
+            {#if chat.user === $user}
+              <button
+                class="delete"
+                on:click|preventDefault={() => {
+                  const yes = confirm('Are you sure?');
+                  if (yes) store.delete(chat.msgId);
+                }}>
+                delete
+              </button>
+            {/if}
           </div>
         </article>
       {/each}
@@ -211,7 +211,7 @@
       autocomplete="off"
       on:submit|preventDefault={e => {
         if (!msgInput || !msgInput.trim()) return;
-        $store = { msg: msgInput, user: $user };
+        $store = { msg: msgInput, user: $user, time: new Date().getTime() };
         msgInput = '';
         main.scrollTo(0, main.scrollHeight);
         e.target.msg.focus();

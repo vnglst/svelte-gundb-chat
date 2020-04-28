@@ -77,6 +77,15 @@
       {maxLength}
       {name}
       bind:value
+      on:keypress={e => {
+        <!-- Submit with enter, but shift-enter is allowed -->
+        if (e.which === 13 && !e.shiftKey) {
+          e.target.form.dispatchEvent(new Event('submit', {
+              cancelable: true
+            }));
+          e.preventDefault();
+        }
+      }}
       aria-labelledby={ariaLabelledBy}
       aria-label={ariaLabel}
       {placeholder} />
