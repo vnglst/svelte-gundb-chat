@@ -18,7 +18,7 @@ function createStore() {
   ]);
 
   const { subscribe, update } = writable([]);
-  const chats = gun.get("chats-v2"); // "chats" version 1 was message bombed to death
+  const chats = gun.get("chats-v2"); // "chats" version 1 was "bombed" to death with too many large messages
 
   chats.map().on((val, id) => {
     update((state) => {
@@ -33,10 +33,11 @@ function createStore() {
           ...val,
         });
 
-      // no pagination yet, failsafe to prevent rendering for too many messages
+      // no pagination yet, failsafe to prevent rendering too many messages
       if (state.length > 500) state.shift();
 
-      return state;
+      // sort messages based on creation time
+      return state.sort((a, b) => a.time - b.time);
     });
   });
 
