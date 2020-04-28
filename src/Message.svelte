@@ -155,8 +155,6 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    margin: 0;
-    padding: 0;
   }
 
   form {
@@ -183,7 +181,7 @@
           out:fade>
           <div class="meta">
             <span class="time">
-              {new Date(chat.time).toLocaleString('en-US')}
+              {new Date(parseFloat(chat.time)).toLocaleString('en-US')}
             </span>
             <span class="user">{chat.user}</span>
           </div>
@@ -213,7 +211,7 @@
       autocomplete="off"
       on:submit|preventDefault={e => {
         if (!msgInput || !msgInput.trim()) return;
-        $store = { msg: msgInput, user: $user };
+        $store = { msg: msgInput, user: $user, time: new Date().getTime() };
         msgInput = '';
         main.scrollTo(0, main.scrollHeight);
         e.target.msg.focus();
