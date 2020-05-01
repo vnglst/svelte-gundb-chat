@@ -1,56 +1,55 @@
-import { writable } from "svelte/store";
+import { writable, derived } from "svelte/store";
 import Gun from "gun/gun";
 
-function removeById(arr, msgId) {
-  for (let i in arr) {
-    if (arr[i].msgId == msgId) {
-      arr.splice(i, 1);
-      break;
-    }
-  }
-}
+const CHAT_ID = "chats-v2";
+const MAX_MESSAGES = 200;
 
-function createStore() {
-  const gun = new Gun([
-    // "http://localhost:8765/gun",
-    "https://phrassed.com/gun",
-    // "https://gunjs.herokuapp.com/gun", // Don't use, unstable
-  ]);
+const gun = new Gun(["https://phrassed.com/gun"]);
 
-  const { subscribe, update } = writable([]);
-  const chats = gun.get("chats-v2"); // "chats" version 1 was "bombed" to death with too many large messages
+if (process.env.NODE_ENV === "development")
+  gun.opt({ peers: ["http://localhost:8765/gun"] });
 
-  chats.map().on((val, id) => {
-    update((state) => {
-      if (!val) {
-        removeById(state, id);
+function createChatStore() {
+  const store = writable([]);
+
+  gun
+    .get(CHAT_ID)
+    .map()
+    .on((val, msgId) =>
+      // update svelte store for all messages
+      // and keep watching for changes
+      store.update((state) => {
+        // ignore null messages = deleted
+        if (!val) {
+          delete state[msgId];
+          return state;
+        }
+
+        state[msgId] = { msgId, ...val };
         return state;
-      }
+      })
+    );
 
-      if (val)
-        state.push({
-          msgId: id,
-          ...val,
-        });
-
-      // no pagination yet, failsafe to prevent rendering too many messages
-      if (state.length > 500) state.shift();
-
-      // sort messages based on creation time
-      return state.sort((a, b) => a.time - b.time);
-    });
+  // derived store that converts key/value object
+  // to sorted array of messages (with a max length)
+  const chatStore = derived(store, ($store) => {
+    const arr = Object.values($store);
+    const sorted = arr.sort((a, b) => a.time - b.time);
+    const begin = Math.max(0, sorted.length - MAX_MESSAGES);
+    const end = arr.length;
+    return arr.slice(begin, end);
   });
 
   return {
-    subscribe,
-    delete: (id) => {
-      chats.get(id).put(null);
+    subscribe: chatStore.subscribe,
+    delete: (msgId) => {
+      gun.get(CHAT_ID).get(msgId).put(null);
     },
     set: (chat) => {
-      const id = Gun.text.random();
-      chats.get(id).put(chat);
+      const msgId = Gun.text.random();
+      gun.get(CHAT_ID).get(msgId).put(chat);
     },
   };
 }
 
-export const store = createStore();
+export const chats = createChatStore();

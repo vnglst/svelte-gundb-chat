@@ -5,7 +5,7 @@
   import { crossfade } from "svelte/transition";
   import { flip } from "svelte/animate";
   import { user } from "./user-store.js";
-  import { store } from "./gun-store";
+  import { chats } from "./gun-store";
   import Page from "./Page.svelte";
   import Nav from "./Nav.svelte";
   import Input from "./Input.svelte";
@@ -173,7 +173,7 @@
 
   <main bind:this={main}>
     <div>
-      {#each $store as chat (chat.msgId)}
+      {#each $chats as chat (chat.msgId)}
         <article
           class:user={chat.user === $user}
           animate:flip
@@ -194,7 +194,7 @@
                 class="delete"
                 on:click|preventDefault={() => {
                   const yes = confirm('Are you sure?');
-                  if (yes) store.delete(chat.msgId);
+                  if (yes) chats.delete(chat.msgId);
                 }}>
                 delete
               </button>
@@ -211,7 +211,7 @@
       autocomplete="off"
       on:submit|preventDefault={e => {
         if (!msgInput || !msgInput.trim()) return;
-        $store = { msg: msgInput, user: $user, time: new Date().getTime() };
+        $chats = { msg: msgInput, user: $user, time: new Date().getTime() };
         msgInput = '';
         main.scrollTo(0, main.scrollHeight);
         e.target.msg.focus();
