@@ -116,10 +116,9 @@
 
 <style>
   main {
-    margin: 0 0 3em 0;
+    margin: auto 0 3em 0;
     padding: 0.5em 1em 0.5em 1em;
-    height: 100vw;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   article {
