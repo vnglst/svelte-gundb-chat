@@ -1,5 +1,5 @@
 <script>
-  import { beforeUpdate, afterUpdate, onMount, onDestroy } from "svelte";
+  import { fly } from "svelte/transition";
   export let el;
   export let showScrollToBottom;
 
@@ -26,19 +26,21 @@
   }
 
   button {
-    margin-right: 2em;
+    margin-right: 1em;
+    text-align: center;
     padding: 0.75em;
     color: white;
+    font-size: 18px;
     line-height: 1;
     border: none;
-    border-radius: 80%;
-    background-color: #333333;
+    border-radius: 50%;
+    background-color: #555555;
     opacity: 0.9;
   }
 </style>
 
 {#if showScrollToBottom}
-  <div>
+  <div out:fly={{ x: 20, duration: 200 }} in:fly={{ x: 20, duration: 200 }}>
     <button on:click|preventDefault={scrollToBottom}>↓</button>
   </div>
 {/if}
