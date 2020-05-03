@@ -1,15 +1,6 @@
 <script>
   import { fly } from "svelte/transition";
-  export let el;
-  export let showScrollToBottom;
-
-  function scrollToBottom() {
-    el.scrollTo({
-      left: 0,
-      top: el.scrollHeight,
-      behavior: "smooth"
-    });
-  }
+  export let onScroll;
 </script>
 
 <style>
@@ -39,8 +30,6 @@
   }
 </style>
 
-{#if showScrollToBottom}
-  <div out:fly={{ x: 20, duration: 200 }} in:fly={{ x: 20, duration: 200 }}>
-    <button on:click|preventDefault={scrollToBottom}>↓</button>
-  </div>
-{/if}
+<div out:fly={{ x: 20, duration: 200 }} in:fly={{ x: 20, duration: 200 }}>
+  <button on:click|preventDefault={onScroll}>↓</button>
+</div>

@@ -16,8 +16,8 @@
 
   let msgInput;
   let store = {};
-  let autoscroll = true;
-  let showScrollToBottom = true;
+  let autoscroll;
+  let showScrollToBottom;
   let main;
 
   // convert key/value object
@@ -37,8 +37,8 @@
   }
 
   beforeUpdate(() => {
-    autoscroll =
-      main && main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
+    if (!main) return;
+    autoscroll = main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
   });
 
   afterUpdate(() => {
@@ -118,6 +118,7 @@
   main {
     margin: 0 0 3em 0;
     padding: 0.5em 1em 0.5em 1em;
+    height: 100vw;
     overflow-y: scroll;
   }
 
@@ -207,7 +208,7 @@
   <main
     bind:this={main}
     on:scroll={({ target }) => {
-      showScrollToBottom = target.scrollHeight - target.offsetHeight > target.scrollTop + 300;
+      showScrollToBottom = main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
     }}>
     {#each chats as chat, i (chat.msgId)}
       <article
@@ -243,8 +244,6 @@
     {/each}
   </main>
 
-  <ScrollToBottom el={main} {showScrollToBottom} />
-
   <div class="form-container">
     <form
       method="get"
@@ -268,4 +267,8 @@
         ariaLabel="Message" />
     </form>
   </div>
+
+  {#if showScrollToBottom}
+    <ScrollToBottom onScroll={scrollToBottom} />
+  {/if}
 </Page>
