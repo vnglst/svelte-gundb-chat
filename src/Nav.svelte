@@ -1,17 +1,21 @@
 <script>
-  import { nav } from "./nav-store.js";
+  import { nav } from "./stores.js";
   export let backTo = null;
   export let backText = null;
 </script>
 
 <style>
   nav {
-    position: relative;
+    position: -webkit-sticky;
+    position: sticky;
+    z-index: 10;
+    top: 0;
     margin: 0;
     padding: 0.75em 0;
     display: flex;
     border-bottom: 1px solid #eee;
     background-color: white;
+    min-height: 3em;
   }
   button {
     display: flex;
@@ -19,7 +23,7 @@
     left: 0.5em;
     top: 0.37em;
     border: none;
-    background-color: transparent;
+    background-color: white;
     align-items: center;
     padding: 0;
     color: #0074d9;
