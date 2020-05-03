@@ -17,6 +17,7 @@
   let msgInput;
   let store = {};
   let autoscroll = false;
+  let newMsg = false;
 
   // convert key/value object
   // to sorted array of messages (with a max length)
@@ -30,13 +31,17 @@
 
   $: chats = toArray(store);
 
+  function scrollToBottom() {
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+
   beforeUpdate(() => {
     const { scrollHeight, offsetHeight } = document.body;
     autoscroll = scrollHeight - offsetHeight < window.scrollY + 50;
   });
 
   afterUpdate(() => {
-    if (autoscroll) window.scrollTo(0, document.body.scrollHeight);
+    if (autoscroll && newMsg) scrollToBottom();
   });
 
   onMount(() => {
@@ -46,6 +51,7 @@
       .on((val, msgId) => {
         if (val) {
           store[msgId] = { msgId, ...val };
+          newMsg = true;
         } else {
           // null messages are deleted
           delete store[msgId];
@@ -185,7 +191,6 @@
   }
 
   form {
-    height: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -245,7 +250,7 @@
         const msgId = Gun.text.random();
         gun.get($chatTopic).set(chat);
         msgInput = '';
-        window.scrollTo(0, document.body.scrollHeight);
+        scrollToBottom();
         e.target.msg.focus();
       }}>
       <Input

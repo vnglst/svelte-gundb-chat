@@ -6,7 +6,10 @@
 
 <style>
   nav {
-    position: relative;
+    position: -webkit-sticky;
+    position: sticky;
+    z-index: 10;
+    top: 0;
     margin: 0;
     padding: 0.75em 0;
     display: flex;
@@ -20,7 +23,7 @@
     left: 0.5em;
     top: 0.37em;
     border: none;
-    background-color: transparent;
+    background-color: white;
     align-items: center;
     padding: 0;
     color: #0074d9;

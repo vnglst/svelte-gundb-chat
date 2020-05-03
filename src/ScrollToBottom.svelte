@@ -23,7 +23,6 @@
     flex-direction: column;
     align-items: flex-end;
     max-width: 640px;
-    padding: 0.25em 1em;
   }
 
   button {
