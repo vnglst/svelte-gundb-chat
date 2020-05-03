@@ -1,4 +1,5 @@
 import Gun from "gun/gun";
+import "gun/lib/webrtc";
 
 export const gun = new Gun(["https://phrassed.com/gun"]);
 
