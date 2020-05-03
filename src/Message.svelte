@@ -30,21 +30,13 @@
 
   $: chats = toArray(store);
 
-  function scrollToBottom() {
-    window.scrollTo({
-      left: 0,
-      top: document.body.scrollHeight,
-      behavior: "smooth"
-    });
-  }
-
   beforeUpdate(() => {
     const { scrollHeight, offsetHeight } = document.body;
     autoscroll = scrollHeight - offsetHeight < window.scrollY + 50;
   });
 
   afterUpdate(() => {
-    if (autoscroll) scrollToBottom();
+    if (autoscroll) window.scrollTo(0, document.body.scrollHeight);
   });
 
   onMount(() => {
@@ -253,7 +245,7 @@
         const msgId = Gun.text.random();
         gun.get($chatTopic).set(chat);
         msgInput = '';
-        scrollToBottom();
+        window.scrollTo(0, document.body.scrollHeight);
         e.target.msg.focus();
       }}>
       <Input
