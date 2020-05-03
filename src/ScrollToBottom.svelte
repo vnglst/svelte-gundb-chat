@@ -1,12 +1,12 @@
 <script>
-  let y = 0;
-  $: showScrollToBottom =
-    document.body.scrollHeight - document.body.offsetHeight > y + 300;
+  import { beforeUpdate, afterUpdate, onMount, onDestroy } from "svelte";
+  export let el;
+  export let showScrollToBottom = true;
 
   function scrollToBottom() {
-    window.scrollTo({
+    el.scrollTo({
       left: 0,
-      top: document.body.scrollHeight,
+      top: el.scrollHeight,
       behavior: "smooth"
     });
   }
@@ -26,6 +26,7 @@
   }
 
   button {
+    margin-right: 2em;
     padding: 0.75em;
     color: white;
     line-height: 1;
@@ -35,8 +36,6 @@
     opacity: 0.9;
   }
 </style>
-
-<svelte:window bind:scrollY={y} />
 
 {#if showScrollToBottom}
   <div>

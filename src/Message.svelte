@@ -17,7 +17,8 @@
   let msgInput;
   let store = {};
   let autoscroll = false;
-  let newMsg = false;
+  let showScrollToBottom = false;
+  let main;
 
   // convert key/value object
   // to sorted array of messages (with a max length)
@@ -32,16 +33,16 @@
   $: chats = toArray(store);
 
   function scrollToBottom() {
-    window.scrollTo(0, document.body.scrollHeight);
+    main.scrollTo(0, main.scrollHeight);
   }
 
   beforeUpdate(() => {
-    const { scrollHeight, offsetHeight } = document.body;
-    autoscroll = scrollHeight - offsetHeight < window.scrollY + 50;
+    autoscroll =
+      main && main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
   });
 
   afterUpdate(() => {
-    if (autoscroll && newMsg) scrollToBottom();
+    if (autoscroll) main.scrollTo(0, main.scrollHeight);
   });
 
   onMount(() => {
@@ -51,7 +52,6 @@
       .on((val, msgId) => {
         if (val) {
           store[msgId] = { msgId, ...val };
-          newMsg = true;
         } else {
           // null messages are deleted
           delete store[msgId];
@@ -116,8 +116,9 @@
 
 <style>
   main {
-    margin: 0;
-    padding: 0.5em 1em 2.5em 1em;
+    margin: 0 0 3em 0;
+    padding: 0.5em 1em 0.5em 1em;
+    overflow-y: scroll;
   }
 
   article {
@@ -203,7 +204,11 @@
 <Page>
   <Nav backTo="settings" backText="Sign In">Timeline</Nav>
 
-  <main>
+  <main
+    bind:this={main}
+    on:scroll={({ target }) => {
+      showScrollToBottom = target.scrollHeight - target.offsetHeight > target.scrollTop + 300;
+    }}>
     {#each chats as chat, i (chat.msgId)}
       <article
         class:user={chat.user === $user}
@@ -238,7 +243,7 @@
     {/each}
   </main>
 
-  <ScrollToBottom />
+  <ScrollToBottom el={main} {showScrollToBottom} />
 
   <div class="form-container">
     <form
