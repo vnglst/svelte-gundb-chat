@@ -1,30 +1,71 @@
 <script>
-  import { beforeUpdate, afterUpdate, onMount } from "svelte";
+  import { beforeUpdate, afterUpdate, onMount, onDestroy } from "svelte";
   import { fade, fly } from "svelte/transition";
   import { quintOut } from "svelte/easing";
   import { crossfade } from "svelte/transition";
   import { flip } from "svelte/animate";
-  import { user } from "./user-store.js";
-  import { chats } from "./gun-store";
+  import { user, chatTopic } from "./stores.js";
   import Page from "./Page.svelte";
   import Nav from "./Nav.svelte";
   import Input from "./Input.svelte";
+  import ScrollToBottom from "./ScrollToBottom.svelte";
+  import { gun } from "./initGun.js";
+  import Gun from "gun/gun";
+
+  const MAX_MESSAGES = 50;
 
   let msgInput;
-  let main;
-  let autoscroll;
+  let store = {};
+  let autoscroll = false;
+
+  // convert key/value object
+  // to sorted array of messages (with a max length)
+  function toArray(store) {
+    const arr = Object.values(store);
+    const sorted = arr.sort((a, b) => a.time - b.time);
+    const begin = Math.max(0, sorted.length - MAX_MESSAGES);
+    const end = arr.length;
+    return arr.slice(begin, end);
+  }
+
+  $: chats = toArray(store);
+
+  function scrollToBottom() {
+    window.scrollTo({
+      left: 0,
+      top: document.body.scrollHeight,
+      behavior: "smooth"
+    });
+  }
 
   beforeUpdate(() => {
-    autoscroll =
-      main && main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
+    const { scrollHeight, offsetHeight } = document.body;
+    autoscroll = scrollHeight - offsetHeight < window.scrollY + 50;
   });
 
   afterUpdate(() => {
-    if (autoscroll) main.scrollTo(0, main.scrollHeight);
+    if (autoscroll) scrollToBottom();
   });
 
   onMount(() => {
-    if (main) main.scrollTo(0, main.scrollHeight);
+    gun
+      .get($chatTopic)
+      .map()
+      .on((val, msgId) => {
+        if (val) {
+          store[msgId] = { msgId, ...val };
+        } else {
+          // null messages are deleted
+          delete store[msgId];
+          // reassign store to trigger svelte's reactivity
+          store = store;
+        }
+      });
+  });
+
+  onDestroy(() => {
+    // remove gun listeners
+    gun.get($chatTopic).off();
   });
 
   const [send, receive] = crossfade({
@@ -77,14 +118,8 @@
 
 <style>
   main {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    background-color: white;
-    flex: 1 1 auto;
-    margin: 0 0 2.5em 0;
-    padding: 0.5em 1em;
-    overflow-y: auto;
+    margin: 0;
+    padding: 0.5em 1em 2.5em 1em;
   }
 
   article {
@@ -106,7 +141,7 @@
     /* This makes sure returns are also rendered */
     white-space: pre-wrap;
 
-    /* The trouble you have to go through to keep simple text inside it's div! 😆 */
+    /* The trouble you have to go through to keep simple text inside a div! 😆 */
     /* Source: https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/ */
 
     /* These are technically the same, but use both */
@@ -171,39 +206,42 @@
 <Page>
   <Nav backTo="settings" backText="Sign In">Timeline</Nav>
 
-  <main bind:this={main}>
-    <div>
-      {#each $chats as chat (chat.msgId)}
-        <article
-          class:user={chat.user === $user}
-          animate:flip
-          in:receive={{ key: chat.msgId }}
-          out:fade>
-          <div class="meta">
-            <span class="time">
-              {new Date(parseFloat(chat.time)).toLocaleString('en-US')}
-            </span>
-            <span class="user">{chat.user}</span>
-          </div>
-          <div
-            class="msg"
-            style="background-color: {chat.user !== $user && toHSL(chat.user)}">
-            {chat.msg}
-            {#if chat.user === $user}
-              <button
-                class="delete"
-                on:click|preventDefault={() => {
-                  const yes = confirm('Are you sure?');
-                  if (yes) chats.delete(chat.msgId);
-                }}>
-                delete
-              </button>
-            {/if}
-          </div>
-        </article>
-      {/each}
-    </div>
+  <main>
+    {#each chats as chat, i (chat.msgId)}
+      <article
+        class:user={chat.user === $user}
+        animate:flip
+        in:receive={{ key: chat.msgId }}
+        out:fade>
+        <div class="meta">
+          <span class="time">
+            {new Date(parseFloat(chat.time)).toLocaleString('en-US')}
+          </span>
+          <span class="user">{chat.user}</span>
+        </div>
+        <div
+          class="msg"
+          style="background-color: {chat.user !== $user && toHSL(chat.user)}">
+          {chat.msg}
+          {#if chat.user === $user}
+            <button
+              class="delete"
+              on:click|preventDefault={() => {
+                const yes = confirm('Are you sure?');
+                if (yes) gun
+                    .get($chatTopic)
+                    .get(chat.msgId)
+                    .put(null);
+              }}>
+              delete
+            </button>
+          {/if}
+        </div>
+      </article>
+    {/each}
   </main>
+
+  <ScrollToBottom />
 
   <div class="form-container">
     <form
@@ -211,9 +249,11 @@
       autocomplete="off"
       on:submit|preventDefault={e => {
         if (!msgInput || !msgInput.trim()) return;
-        $chats = { msg: msgInput, user: $user, time: new Date().getTime() };
+        const chat = { msg: msgInput, user: $user, time: new Date().getTime() };
+        const msgId = Gun.text.random();
+        gun.get($chatTopic).set(chat);
         msgInput = '';
-        main.scrollTo(0, main.scrollHeight);
+        scrollToBottom();
         e.target.msg.focus();
       }}>
       <Input

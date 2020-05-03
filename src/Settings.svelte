@@ -1,7 +1,6 @@
 <script>
-  import { user } from "./user-store.js";
   import { fade, fly } from "svelte/transition";
-  import { nav } from "./nav-store.js";
+  import { nav, user, chatTopic } from "./stores.js";
   import { flip } from "svelte/animate";
   import Page from "./Page.svelte";
   import Nav from "./Nav.svelte";
@@ -50,6 +49,12 @@
         maxLength="50"
         placeholder="Steve Jobs"
         ariaLabelledBy="name-label" />
+      <label id="chat-label">CHAT TOPIC</label>
+      <Input
+        bind:value={$chatTopic}
+        maxLength="50"
+        placeholder="Chat topic"
+        ariaLabelledBy="chat-label" />
     </form>
   </main>
 

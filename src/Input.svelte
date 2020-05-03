@@ -13,6 +13,7 @@
   export let multiline = false;
 
   // TODO: kinda hacky, on desktop it's more that 40, but calculating chars per line is hard
+  // Something along the lines of this: https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/TextareaAutosize/TextareaAutosize.js
   const CHARS_PER_LINE = 40;
 
   function calcRows(v) {

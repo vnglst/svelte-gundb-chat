@@ -1,5 +1,5 @@
 <script>
-  import { user } from "./user-store.js";
+  import { user } from "./stores.js";
   import { fade } from "svelte/transition";
 </script>
 

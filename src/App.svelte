@@ -1,6 +1,5 @@
 <script>
-  import { user } from "./user-store.js";
-  import { nav } from "./nav-store.js";
+  import { nav } from "./stores.js";
   import Messages from "./Message.svelte";
   import Settings from "./Settings.svelte";
   import Nav from "./Nav.svelte";

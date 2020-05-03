@@ -1,5 +1,5 @@
 <script>
-  import { nav } from "./nav-store.js";
+  import { nav } from "./stores.js";
   export let backTo = null;
   export let backText = null;
 </script>
