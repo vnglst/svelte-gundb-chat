@@ -37,8 +37,8 @@
   }
 
   beforeUpdate(() => {
-    if (!main) return;
-    autoscroll = main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
+    autoscroll =
+      main && main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
   });
 
   afterUpdate(() => {
@@ -209,7 +209,7 @@
     on:scroll={({ target }) => {
       showScrollToBottom = main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
     }}>
-    {#each chats as chat, i (chat.msgId)}
+    {#each chats as chat (chat.msgId)}
       <article
         class:user={chat.user === $user}
         animate:flip
@@ -250,7 +250,6 @@
       on:submit|preventDefault={e => {
         if (!msgInput || !msgInput.trim()) return;
         const chat = { msg: msgInput, user: $user, time: new Date().getTime() };
-        const msgId = Gun.text.random();
         gun.get($chatTopic).set(chat);
         msgInput = '';
         scrollToBottom();
