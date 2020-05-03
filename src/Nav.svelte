@@ -12,6 +12,7 @@
     display: flex;
     border-bottom: 1px solid #eee;
     background-color: white;
+    min-height: 3em;
   }
   button {
     display: flex;

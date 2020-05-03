@@ -41,6 +41,6 @@
 
 {#if showScrollToBottom}
   <div>
-    <button on:click|preventDefault={scrollToBottom}>⬇</button>
+    <button on:click|preventDefault={scrollToBottom}>↓</button>
   </div>
 {/if}
