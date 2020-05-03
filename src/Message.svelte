@@ -16,8 +16,8 @@
 
   let msgInput;
   let store = {};
-  let autoscroll = false;
-  let showScrollToBottom = false;
+  let autoscroll = true;
+  let showScrollToBottom = true;
   let main;
 
   // convert key/value object

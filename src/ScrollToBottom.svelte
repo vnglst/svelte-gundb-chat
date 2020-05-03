@@ -1,7 +1,7 @@
 <script>
   import { beforeUpdate, afterUpdate, onMount, onDestroy } from "svelte";
   export let el;
-  export let showScrollToBottom = true;
+  export let showScrollToBottom;
 
   function scrollToBottom() {
     el.scrollTo({
