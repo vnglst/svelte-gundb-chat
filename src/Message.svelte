@@ -3,7 +3,6 @@
   import { fade, fly } from "svelte/transition";
   import { quintOut } from "svelte/easing";
   import { crossfade } from "svelte/transition";
-  import { flip } from "svelte/animate";
   import { user, chatTopic } from "./stores.js";
   import Page from "./Page.svelte";
   import Nav from "./Nav.svelte";
@@ -12,7 +11,7 @@
   import { gun } from "./initGun.js";
   import Gun from "gun/gun";
 
-  const MAX_MESSAGES = 50;
+  const MAX_MESSAGES = 500;
 
   let msgInput;
   let store = {};
@@ -33,7 +32,7 @@
   $: chats = toArray(store);
 
   function scrollToBottom() {
-    main.scrollTo(0, main.scrollHeight);
+    main.scrollTo({ left: 0, top: main.scrollHeight });
   }
 
   beforeUpdate(() => {
@@ -212,9 +211,8 @@
     {#each chats as chat (chat.msgId)}
       <article
         class:user={chat.user === $user}
-        animate:flip
         in:receive={{ key: chat.msgId }}
-        out:fade>
+        out:send={{ key: chat.msgId }}>
         <div class="meta">
           <span class="time">
             {new Date(parseFloat(chat.time)).toLocaleString('en-US')}
