@@ -91,7 +91,7 @@ button:focus {
 }
 
 .loading-bundle {
-  margin: 2em;
+  margin: 2em 0;
   text-align: center;
   opacity: 0;
   animation: delay-opacity 1s 1s forwards;
@@ -100,5 +100,31 @@ button:focus {
 @keyframes delay-opacity {
   to {
     opacity: 1;
+  }
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  animation: delay-opacity 1s 0.2s forwards;
+  margin: 1em;
+}
+
+.loadingspinner {
+  pointer-events: none;
+  width: 2.5em;
+  height: 2.5em;
+  border: 0.4em solid transparent;
+  border-color: #eee;
+  border-top-color: #0074d9;
+  border-radius: 50%;
+  animation: loadingspin 1s linear infinite;
+}
+
+@keyframes loadingspin {
+  100% {
+    transform: rotate(360deg);
   }
 }

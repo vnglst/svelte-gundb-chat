@@ -11,20 +11,22 @@
   import { gun } from "./initGun.js";
   import Gun from "gun/gun";
 
-  const MAX_MESSAGES = 500;
+  const ADD_ON_SCROLL = 50; // messages to add when scrolling to the top
+  let showMessages = 100; // initial messages to load
 
   let msgInput;
   let store = {};
   let autoscroll;
   let showScrollToBottom;
   let main;
+  let isLoading = false;
 
   // convert key/value object
   // to sorted array of messages (with a max length)
   function toArray(store) {
     const arr = Object.values(store);
     const sorted = arr.sort((a, b) => a.time - b.time);
-    const begin = Math.max(0, sorted.length - MAX_MESSAGES);
+    const begin = Math.max(0, sorted.length - showMessages);
     const end = arr.length;
     return arr.slice(begin, end);
   }
@@ -45,19 +47,25 @@
   });
 
   onMount(() => {
-    gun
-      .get($chatTopic)
-      .map()
-      .on((val, msgId) => {
-        if (val) {
-          store[msgId] = { msgId, ...val };
-        } else {
-          // null messages are deleted
-          delete store[msgId];
-          // reassign store to trigger svelte's reactivity
-          store = store;
-        }
-      });
+    isLoading = true;
+    // use settimeout to render UI before loading messages
+    setTimeout(() => {
+      gun
+        .get($chatTopic)
+        .map()
+        .on((val, msgId) => {
+          if (val) {
+            store[msgId] = { msgId, ...val };
+          } else {
+            // null messages are deleted
+            delete store[msgId];
+            // reassign store to trigger svelte's reactivity
+            store = store;
+          }
+        });
+      // hide loading spinner, gun's parsing json is not async 😢
+      isLoading = false;
+    }, 0);
   });
 
   onDestroy(() => {
@@ -66,7 +74,7 @@
   });
 
   const [send, receive] = crossfade({
-    duration: (d) => Math.sqrt(d * 200),
+    duration: d => Math.sqrt(d * 200),
 
     fallback(node, params) {
       const style = getComputedStyle(node);
@@ -75,12 +83,12 @@
       return {
         duration: 600,
         easing: quintOut,
-        css: (t) => `
+        css: t => `
 					transform: ${transform} scale(${t});
 					opacity: ${t}
-				`,
+				`
       };
-    },
+    }
   });
 
   function toHSL(str) {
@@ -88,7 +96,7 @@
     const opts = {
       hue: [60, 360],
       sat: [75, 100],
-      lum: [70, 71],
+      lum: [70, 71]
     };
 
     function range(hash, min, max) {
@@ -114,18 +122,37 @@
 </script>
 
 <Page>
-  <Nav backTo="settings" backText="Sign In">Timeline</Nav>
+  <Nav backTo="settings" backText="Sign In">Messages</Nav>
 
   <main
     bind:this={main}
-    on:scroll={({ target }) => {
+    on:scroll={e => {
       showScrollToBottom = main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
+      if (main.scrollTop <= main.scrollHeight / 10) {
+        if (!isLoading) {
+          const totalMessages = Object.keys(store).length - 1;
+          if (showMessages >= totalMessages) return;
+          isLoading = true;
+          setTimeout(() => {
+            showMessages += ADD_ON_SCROLL;
+            chats = toArray(store);
+            if (main.scrollTop === 0) main.scrollTop = 1;
+            isLoading = false;
+          }, 600);
+        }
+      }
     }}
   >
+    {#if isLoading}
+      <div class="centered">
+        <div class="loadingspinner" />
+      </div>
+    {/if}
+
     {#each chats as chat (chat.msgId)}
       <article
         class:user={chat.user === $user}
-        in:receive={{ key: chat.msgId }}
+        in:fade
         out:send={{ key: chat.msgId }}
       >
         <div class="meta">
@@ -144,7 +171,10 @@
               class="delete"
               on:click|preventDefault={() => {
                 const yes = confirm('Are you sure?');
-                if (yes) gun.get($chatTopic).get(chat.msgId).put(null);
+                if (yes) gun
+                    .get($chatTopic)
+                    .get(chat.msgId)
+                    .put(null);
               }}
             >
               delete
@@ -159,7 +189,7 @@
     <form
       method="get"
       autocomplete="off"
-      on:submit|preventDefault={(e) => {
+      on:submit|preventDefault={e => {
         if (!msgInput || !msgInput.trim()) return;
         const chat = { msg: msgInput, user: $user, time: new Date().getTime() };
         gun.get($chatTopic).set(chat);

@@ -12,7 +12,7 @@
 
   <main>
     <form
-      on:submit|preventDefault={(e) => {
+      on:submit|preventDefault={e => {
         if (!$user) return;
         $nav = 'messages';
       }}
