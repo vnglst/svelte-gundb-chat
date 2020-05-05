@@ -11,13 +11,14 @@
   import { gun } from "./initGun.js";
   import Gun from "gun/gun";
 
-  const MAX_MESSAGES = 500;
+  let MAX_MESSAGES = 10;
 
   let msgInput;
   let store = {};
   let autoscroll;
   let showScrollToBottom;
   let main;
+  let isLoading = false;
 
   // convert key/value object
   // to sorted array of messages (with a max length)
@@ -45,28 +46,34 @@
   });
 
   onMount(() => {
-    gun
-      .get($chatTopic)
-      .map()
-      .on((val, msgId) => {
-        if (val) {
-          store[msgId] = { msgId, ...val };
-        } else {
-          // null messages are deleted
-          delete store[msgId];
-          // reassign store to trigger svelte's reactivity
-          store = store;
-        }
-      });
+    isLoading = true;
+    setTimeout(() => {
+      gun
+        .get($chatTopic)
+        .map()
+        .on((val, msgId) => {
+          if (val) {
+            store[msgId] = { msgId, ...val };
+          } else {
+            // null messages are deleted
+            delete store[msgId];
+            // reassign store to trigger svelte's reactivity
+            store = store;
+          }
+        });
+    }, 0);
+    isLoading = false;
   });
 
   onDestroy(() => {
     // remove gun listeners
-    gun.get($chatTopic).off();
+    setTimeout(() => {
+      gun.get($chatTopic).off();
+    }, 0);
   });
 
   const [send, receive] = crossfade({
-    duration: (d) => Math.sqrt(d * 200),
+    duration: d => Math.sqrt(d * 200),
 
     fallback(node, params) {
       const style = getComputedStyle(node);
@@ -75,12 +82,12 @@
       return {
         duration: 600,
         easing: quintOut,
-        css: (t) => `
+        css: t => `
 					transform: ${transform} scale(${t});
 					opacity: ${t}
-				`,
+				`
       };
-    },
+    }
   });
 
   function toHSL(str) {
@@ -88,7 +95,7 @@
     const opts = {
       hue: [60, 360],
       sat: [75, 100],
-      lum: [70, 71],
+      lum: [70, 71]
     };
 
     function range(hash, min, max) {
@@ -120,8 +127,25 @@
     bind:this={main}
     on:scroll={({ target }) => {
       showScrollToBottom = main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
+      if (main.scrollTop <= 5) {
+        if (!isLoading) setTimeout(() => {
+            MAX_MESSAGES += 50;
+            chats = toArray(store);
+            main.scrollTop = 10;
+            isLoading = false;
+          }, 800);
+        isLoading = true;
+      }
     }}
   >
+    {#if isLoading}
+      <div class="centered">
+        <div class="lds-ripple">
+          <div />
+          <div />
+        </div>
+      </div>
+    {/if}
     {#each chats as chat (chat.msgId)}
       <article
         class:user={chat.user === $user}
@@ -144,7 +168,10 @@
               class="delete"
               on:click|preventDefault={() => {
                 const yes = confirm('Are you sure?');
-                if (yes) gun.get($chatTopic).get(chat.msgId).put(null);
+                if (yes) gun
+                    .get($chatTopic)
+                    .get(chat.msgId)
+                    .put(null);
               }}
             >
               delete
@@ -159,7 +186,7 @@
     <form
       method="get"
       autocomplete="off"
-      on:submit|preventDefault={(e) => {
+      on:submit|preventDefault={e => {
         if (!msgInput || !msgInput.trim()) return;
         const chat = { msg: msgInput, user: $user, time: new Date().getTime() };
         gun.get($chatTopic).set(chat);
