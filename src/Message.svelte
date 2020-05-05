@@ -129,7 +129,7 @@
       showScrollToBottom = main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
       if (main.scrollTop <= 5) {
         if (!isLoading) setTimeout(() => {
-            MAX_MESSAGES += 50;
+            MAX_MESSAGES += 5;
             chats = toArray(store);
             main.scrollTop = 10;
             isLoading = false;
