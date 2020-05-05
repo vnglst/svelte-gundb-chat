@@ -3,6 +3,10 @@
   export let onScroll;
 </script>
 
+<div out:fly={{ x: 20, duration: 200 }} in:fly={{ x: 20, duration: 200 }}>
+  <button on:click|preventDefault={onScroll}>↓</button>
+</div>
+
 <style>
   div {
     position: fixed;
@@ -29,7 +33,3 @@
     opacity: 0.9;
   }
 </style>
-
-<div out:fly={{ x: 20, duration: 200 }} in:fly={{ x: 20, duration: 200 }}>
-  <button on:click|preventDefault={onScroll}>↓</button>
-</div>

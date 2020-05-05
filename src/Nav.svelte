@@ -4,6 +4,35 @@
   export let backText = null;
 </script>
 
+<nav>
+  {#if backTo}
+    <button
+      on:click={() => {
+        $nav = backTo;
+      }}
+    >
+      <svg
+        height="40"
+        width="40"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M13.7 15.3a1 1 0 0 1-1.4 1.4l-4-4a1 1 0 0 1 0-1.4l4-4a1 1 0 0 1 1.4
+          1.4L10.42 12l3.3 3.3z"
+        />
+      </svg>
+      {#if backText}
+        <span>{backText}</span>
+      {/if}
+    </button>
+  {/if}
+  <h1>
+    <slot />
+  </h1>
+</nav>
+
 <style>
   nav {
     position: -webkit-sticky;
@@ -43,29 +72,3 @@
     font-size: 1.4em;
   }
 </style>
-
-<nav>
-  {#if backTo}
-    <button
-      on:click={() => {
-        $nav = backTo;
-      }}>
-      <svg
-        height="40"
-        width="40"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24">
-        <path
-          fill="currentColor"
-          d="M13.7 15.3a1 1 0 0 1-1.4 1.4l-4-4a1 1 0 0 1 0-1.4l4-4a1 1 0 0 1 1.4
-          1.4L10.42 12l3.3 3.3z" />
-      </svg>
-      {#if backText}
-        <span>{backText}</span>
-      {/if}
-    </button>
-  {/if}
-  <h1>
-    <slot />
-  </h1>
-</nav>

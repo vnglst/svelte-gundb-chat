@@ -3,6 +3,12 @@
   import { fade } from "svelte/transition";
 </script>
 
+<div class="animation" in:fade out:fade>
+  <div class="container">
+    <slot />
+  </div>
+</div>
+
 <style>
   .animation {
     position: absolute;
@@ -18,9 +24,3 @@
     background-color: white;
   }
 </style>
-
-<div class="animation" in:fade out:fade>
-  <div class="container">
-    <slot />
-  </div>
-</div>

@@ -26,6 +26,47 @@
   $: rows = calcRows(value);
 </script>
 
+<div class="input-with-button">
+  {#if multiline}
+    <textarea
+      {disabled}
+      {rows}
+      class="input"
+      type="text"
+      {maxLength}
+      {name}
+      bind:value
+      on:keypress={(e) => {
+        if (e.which === 13 && !e.shiftKey) {
+          e.target.form.dispatchEvent(new Event('submit', {
+              cancelable: true,
+            }));
+          e.preventDefault();
+        }
+      }}
+      aria-labelledby={ariaLabelledBy}
+      aria-label={ariaLabel}
+      {placeholder}
+    />
+  {:else}
+    <input
+      {disabled}
+      {rows}
+      class="input"
+      type="text"
+      {maxLength}
+      {name}
+      bind:value
+      aria-labelledby={ariaLabelledBy}
+      aria-label={ariaLabel}
+      {placeholder}
+    />
+  {/if}
+  {#if value}
+    <input class="submit" type="submit" value="Send" in:fade out:fade />
+  {/if}
+</div>
+
 <style>
   .input-with-button {
     position: relative;
@@ -67,43 +108,3 @@
     cursor: pointer;
   }
 </style>
-
-<div class="input-with-button">
-  {#if multiline}
-    <textarea
-      {disabled}
-      {rows}
-      class="input"
-      type="text"
-      {maxLength}
-      {name}
-      bind:value
-      on:keypress={e => {
-        <!-- Submit with enter, but shift-enter is allowed -->
-        if (e.which === 13 && !e.shiftKey) {
-          e.target.form.dispatchEvent(new Event('submit', {
-              cancelable: true
-            }));
-          e.preventDefault();
-        }
-      }}
-      aria-labelledby={ariaLabelledBy}
-      aria-label={ariaLabel}
-      {placeholder} />
-  {:else}
-    <input
-      {disabled}
-      {rows}
-      class="input"
-      type="text"
-      {maxLength}
-      {name}
-      bind:value
-      aria-labelledby={ariaLabelledBy}
-      aria-label={ariaLabel}
-      {placeholder} />
-  {/if}
-  {#if value}
-    <input class="submit" type="submit" value="Send" in:fade out:fade />
-  {/if}
-</div>

@@ -66,7 +66,7 @@
   });
 
   const [send, receive] = crossfade({
-    duration: d => Math.sqrt(d * 200),
+    duration: (d) => Math.sqrt(d * 200),
 
     fallback(node, params) {
       const style = getComputedStyle(node);
@@ -75,12 +75,12 @@
       return {
         duration: 600,
         easing: quintOut,
-        css: t => `
+        css: (t) => `
 					transform: ${transform} scale(${t});
 					opacity: ${t}
-				`
+				`,
       };
-    }
+    },
   });
 
   function toHSL(str) {
@@ -88,7 +88,7 @@
     const opts = {
       hue: [60, 360],
       sat: [75, 100],
-      lum: [70, 71]
+      lum: [70, 71],
     };
 
     function range(hash, min, max) {
@@ -112,6 +112,78 @@
     return `hsl(${h}, ${s}%, ${l}%)`;
   }
 </script>
+
+<Page>
+  <Nav backTo="settings" backText="Sign In">Timeline</Nav>
+
+  <main
+    bind:this={main}
+    on:scroll={({ target }) => {
+      showScrollToBottom = main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
+    }}
+  >
+    {#each chats as chat (chat.msgId)}
+      <article
+        class:user={chat.user === $user}
+        in:receive={{ key: chat.msgId }}
+        out:send={{ key: chat.msgId }}
+      >
+        <div class="meta">
+          <span class="time">
+            {new Date(parseFloat(chat.time)).toLocaleString('en-US')}
+          </span>
+          <span class="user">{chat.user}</span>
+        </div>
+        <div
+          class="msg"
+          style="background-color: {chat.user !== $user && toHSL(chat.user)}"
+        >
+          {chat.msg}
+          {#if chat.user === $user}
+            <button
+              class="delete"
+              on:click|preventDefault={() => {
+                const yes = confirm('Are you sure?');
+                if (yes) gun.get($chatTopic).get(chat.msgId).put(null);
+              }}
+            >
+              delete
+            </button>
+          {/if}
+        </div>
+      </article>
+    {/each}
+  </main>
+
+  <div class="form-container">
+    <form
+      method="get"
+      autocomplete="off"
+      on:submit|preventDefault={(e) => {
+        if (!msgInput || !msgInput.trim()) return;
+        const chat = { msg: msgInput, user: $user, time: new Date().getTime() };
+        gun.get($chatTopic).set(chat);
+        msgInput = '';
+        scrollToBottom();
+        e.target.msg.focus();
+      }}
+    >
+      <Input
+        multiline
+        disabled={!$user}
+        maxRows={3}
+        bind:value={msgInput}
+        name="msg"
+        placeholder="Message"
+        ariaLabel="Message"
+      />
+    </form>
+  </div>
+
+  {#if showScrollToBottom}
+    <ScrollToBottom onScroll={scrollToBottom} />
+  {/if}
+</Page>
 
 <style>
   main {
@@ -199,72 +271,3 @@
     padding: 0.25em 1em;
   }
 </style>
-
-<Page>
-  <Nav backTo="settings" backText="Sign In">Timeline</Nav>
-
-  <main
-    bind:this={main}
-    on:scroll={({ target }) => {
-      showScrollToBottom = main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
-    }}>
-    {#each chats as chat (chat.msgId)}
-      <article
-        class:user={chat.user === $user}
-        in:receive={{ key: chat.msgId }}
-        out:send={{ key: chat.msgId }}>
-        <div class="meta">
-          <span class="time">
-            {new Date(parseFloat(chat.time)).toLocaleString('en-US')}
-          </span>
-          <span class="user">{chat.user}</span>
-        </div>
-        <div
-          class="msg"
-          style="background-color: {chat.user !== $user && toHSL(chat.user)}">
-          {chat.msg}
-          {#if chat.user === $user}
-            <button
-              class="delete"
-              on:click|preventDefault={() => {
-                const yes = confirm('Are you sure?');
-                if (yes) gun
-                    .get($chatTopic)
-                    .get(chat.msgId)
-                    .put(null);
-              }}>
-              delete
-            </button>
-          {/if}
-        </div>
-      </article>
-    {/each}
-  </main>
-
-  <div class="form-container">
-    <form
-      method="get"
-      autocomplete="off"
-      on:submit|preventDefault={e => {
-        if (!msgInput || !msgInput.trim()) return;
-        const chat = { msg: msgInput, user: $user, time: new Date().getTime() };
-        gun.get($chatTopic).set(chat);
-        msgInput = '';
-        scrollToBottom();
-        e.target.msg.focus();
-      }}>
-      <Input
-        multiline={true}
-        disabled={$user ? false : true}
-        maxRows={3}
-        bind:value={msgInput}
-        name="msg"
-        placeholder="Message"
-        ariaLabel="Message" />
-    </form>
-  </div>
-
-  {#if showScrollToBottom}
-    <ScrollToBottom onScroll={scrollToBottom} />
-  {/if}
-</Page>

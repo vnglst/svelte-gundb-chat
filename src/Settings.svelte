@@ -7,6 +7,51 @@
   import Input from "./Input.svelte";
 </script>
 
+<Page>
+  <Nav>Sign In</Nav>
+
+  <main>
+    <form
+      on:submit|preventDefault={(e) => {
+        if (!$user) return;
+        $nav = 'messages';
+      }}
+    >
+      <label id="name-label">ENTER YOUR NICKNAME</label>
+      <Input
+        bind:value={$user}
+        maxLength="50"
+        placeholder="Steve Jobs"
+        ariaLabelledBy="name-label"
+      />
+      <label id="chat-label">CHAT TOPIC</label>
+      <Input
+        bind:value={$chatTopic}
+        maxLength="50"
+        placeholder="Chat topic"
+        ariaLabelledBy="chat-label"
+      />
+    </form>
+  </main>
+
+  <footer>
+    Made with
+    <span>♥️</span>
+    by
+    <a href="https://koenvangilst.nl">Koen van Gilst</a>
+    <br />
+    Using
+    <a href="https://svelte.dev/">svelte</a>
+    and
+    <a href="https://gun.eco/">gunDB</a>
+    see
+    <a href="https://github.com/vnglst/svelte-gundb-chat">Github</a>
+    <br />
+    v. {process.env.APP_VERSION} git {process.env.COMMIT_HASH}
+  </footer>
+
+</Page>
+
 <style>
   main {
     margin: auto 0;
@@ -33,45 +78,3 @@
     color: red;
   }
 </style>
-
-<Page>
-  <Nav>Sign In</Nav>
-
-  <main>
-    <form
-      on:submit|preventDefault={e => {
-        if (!$user) return;
-        $nav = 'messages';
-      }}>
-      <label id="name-label">ENTER YOUR NICKNAME</label>
-      <Input
-        bind:value={$user}
-        maxLength="50"
-        placeholder="Steve Jobs"
-        ariaLabelledBy="name-label" />
-      <label id="chat-label">CHAT TOPIC</label>
-      <Input
-        bind:value={$chatTopic}
-        maxLength="50"
-        placeholder="Chat topic"
-        ariaLabelledBy="chat-label" />
-    </form>
-  </main>
-
-  <footer>
-    Made with
-    <span>♥️</span>
-    by
-    <a href="https://koenvangilst.nl">Koen van Gilst</a>
-    <br />
-    Using
-    <a href="https://svelte.dev/">svelte</a>
-    and
-    <a href="https://gun.eco/">gunDB</a>
-    see
-    <a href="https://github.com/vnglst/svelte-gundb-chat">Github</a>
-    <br />
-    v. {process.env.APP_VERSION} git {process.env.COMMIT_HASH}
-  </footer>
-
-</Page>
