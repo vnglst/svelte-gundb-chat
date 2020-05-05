@@ -11,7 +11,8 @@
   import { gun } from "./initGun.js";
   import Gun from "gun/gun";
 
-  let MAX_MESSAGES = 10;
+  const ADD_ON_SCROLL = 50; // messages to add when scrolling to the top
+  let showMessages = 100; // initial messages to load
 
   let msgInput;
   let store = {};
@@ -25,7 +26,7 @@
   function toArray(store) {
     const arr = Object.values(store);
     const sorted = arr.sort((a, b) => a.time - b.time);
-    const begin = Math.max(0, sorted.length - MAX_MESSAGES);
+    const begin = Math.max(0, sorted.length - showMessages);
     const end = arr.length;
     return arr.slice(begin, end);
   }
@@ -47,6 +48,7 @@
 
   onMount(() => {
     isLoading = true;
+    // use settimeout to render UI before loading messages
     setTimeout(() => {
       gun
         .get($chatTopic)
@@ -61,15 +63,14 @@
             store = store;
           }
         });
+      // hide loading spinner, gun's parsing json is not async 😢
+      isLoading = false;
     }, 0);
-    isLoading = false;
   });
 
   onDestroy(() => {
     // remove gun listeners
-    setTimeout(() => {
-      gun.get($chatTopic).off();
-    }, 0);
+    gun.get($chatTopic).off();
   });
 
   const [send, receive] = crossfade({
@@ -121,35 +122,37 @@
 </script>
 
 <Page>
-  <Nav backTo="settings" backText="Sign In">Timeline</Nav>
+  <Nav backTo="settings" backText="Sign In">Messages</Nav>
 
   <main
     bind:this={main}
-    on:scroll={({ target }) => {
+    on:scroll={e => {
       showScrollToBottom = main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
-      if (main.scrollTop <= 5) {
-        if (!isLoading) setTimeout(() => {
-            MAX_MESSAGES += 5;
+      if (main.scrollTop <= main.scrollHeight / 10) {
+        if (!isLoading) {
+          const totalMessages = Object.keys(store).length - 1;
+          if (showMessages >= totalMessages) return;
+          isLoading = true;
+          setTimeout(() => {
+            showMessages += ADD_ON_SCROLL;
             chats = toArray(store);
-            main.scrollTop = 10;
+            if (main.scrollTop === 0) main.scrollTop = 1;
             isLoading = false;
-          }, 800);
-        isLoading = true;
+          }, 600);
+        }
       }
     }}
   >
     {#if isLoading}
       <div class="centered">
-        <div class="lds-ripple">
-          <div />
-          <div />
-        </div>
+        <div class="loadingspinner" />
       </div>
     {/if}
+
     {#each chats as chat (chat.msgId)}
       <article
         class:user={chat.user === $user}
-        in:receive={{ key: chat.msgId }}
+        in:fade
         out:send={{ key: chat.msgId }}
       >
         <div class="meta">
