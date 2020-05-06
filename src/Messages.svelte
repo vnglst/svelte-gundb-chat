@@ -49,21 +49,18 @@
   onMount(() => {
     isLoading = true;
     // use settimeout to render UI before loading messages
+    // hide loading spinner, gun's parsing json is not async 😢
     setTimeout(() => {
-      gun
-        .get($chatTopic)
-        .map()
-        .on((val, msgId) => {
-          if (val) {
-            store[msgId] = { msgId, ...val };
-          } else {
-            // null messages are deleted
-            delete store[msgId];
-            // reassign store to trigger svelte's reactivity
-            store = store;
-          }
-        });
-      // hide loading spinner, gun's parsing json is not async 😢
+      gun.get($chatTopic).map((val, msgId) => {
+        if (val) {
+          store[msgId] = { msgId, ...val };
+        } else {
+          // null messages are deleted
+          delete store[msgId];
+          // reassign store to trigger svelte's reactivity
+          store = store;
+        }
+      });
       isLoading = false;
     }, 0);
   });
@@ -84,8 +81,8 @@
         duration: 600,
         easing: quintOut,
         css: t => `
-					transform: ${transform} scale(${t});
-					opacity: ${t}
+          transform: ${transform} scale(${t});
+          opacity: ${t}
 				`
       };
     }
