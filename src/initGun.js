@@ -5,7 +5,6 @@ export const gun = new Gun([
   // // Community relay peers: https://github.com/amark/gun/wiki/volunteer.dht
   "https://www.raygun.live/gun",
   "https://gunmeetingserver.herokuapp.com/gun",
-  " http://gun-matrix.herokuapp.com/gun",
   "https://gun-us.herokuapp.com/gun",
   "https://gun-eu.herokuapp.com/gun",
   // // My own relay peer
