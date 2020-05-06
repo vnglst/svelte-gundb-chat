@@ -1,6 +1,6 @@
 {
   "name": "svelte-app",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "scripts": {
     "build": "rollup -c && workbox injectManifest workbox-config.js",
@@ -9,7 +9,6 @@
   },
   "devDependencies": {
     "@hapi/hapi": "^19.1.1",
-    "@hapi/inert": "^6.0.1",
     "@rollup/plugin-commonjs": "^11.0.0",
     "@rollup/plugin-node-resolve": "^7.0.0",
     "@rollup/plugin-replace": "^2.3.2",

@@ -1,5 +1,4 @@
 const Hapi = require("@hapi/hapi");
-const Inert = require("@hapi/inert");
 const Gun = require("gun");
 
 const server = new Hapi.Server({
@@ -10,20 +9,6 @@ const server = new Hapi.Server({
 async function runtime() {
   new Gun({
     web: server.listener,
-  });
-
-  await server.register(Inert);
-
-  server.route({
-    method: "GET",
-    path: "/{param*}",
-    handler: {
-      directory: {
-        path: require("path").join(__dirname, "public"),
-        redirectToSlash: true,
-        index: true,
-      },
-    },
   });
 
   await server.start();
