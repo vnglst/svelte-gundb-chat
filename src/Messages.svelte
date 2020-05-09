@@ -49,18 +49,21 @@
   onMount(() => {
     isLoading = true;
     // use settimeout to render UI before loading messages
-    // hide loading spinner, gun's parsing json is not async 😢
     setTimeout(() => {
-      gun.get($chatTopic).map((val, msgId) => {
-        if (val) {
-          store[msgId] = { msgId, ...val };
-        } else {
-          // null messages are deleted
-          delete store[msgId];
-          // reassign store to trigger svelte's reactivity
-          store = store;
-        }
-      });
+      gun
+        .get($chatTopic)
+        .map()
+        .on((val, msgId) => {
+          if (val) {
+            store[msgId] = { msgId, ...val };
+          } else {
+            // null messages are deleted
+            delete store[msgId];
+            // reassign store to trigger svelte's reactivity
+            store = store;
+          }
+        });
+      // hide loading spinner
       isLoading = false;
     }, 0);
   });
@@ -154,7 +157,9 @@
       >
         <div class="meta">
           <span class="time">
-            {new Date(parseFloat(chat.time)).toLocaleString('en-US', { hour12: false })}
+            {new Date(parseFloat(chat.time)).toLocaleString('en-US', {
+              hour12: false
+            })}
           </span>
           <span class="user">{chat.user}</span>
         </div>
