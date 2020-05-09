@@ -1,6 +1,6 @@
 {
   "name": "svelte-app",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "license": "MIT",
   "scripts": {
     "build": "rollup -c && workbox injectManifest workbox-config.js",
