@@ -46,26 +46,36 @@
     if (autoscroll) main.scrollTo(0, main.scrollHeight);
   });
 
-  onMount(() => {
+  onMount(async () => {
     isLoading = true;
-    // use settimeout to render UI before loading messages
-    setTimeout(() => {
-      gun
-        .get($chatTopic)
-        .map()
-        .on((val, msgId) => {
+    let _store = {};
+    let timeout;
+    gun
+      .get($chatTopic)
+      .map()
+      .on(
+        (val, msgId) => {
           if (val) {
-            store[msgId] = { msgId, ...val };
+            isLoading = true;
+            _store[msgId] = { msgId, ...val };
+            // debounce update svelte store to avoid overloading ui
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => {
+              store = _store;
+              isLoading = false;
+            }, 100);
           } else {
             // null messages are deleted
             delete store[msgId];
             // reassign store to trigger svelte's reactivity
             store = store;
           }
-        });
-      // hide loading spinner
-      isLoading = false;
-    }, 0);
+        },
+        {
+          change: true
+        }
+      );
+    isLoading = false;
   });
 
   onDestroy(() => {
@@ -194,7 +204,10 @@
       on:submit|preventDefault={e => {
         if (!msgInput || !msgInput.trim()) return;
         const chat = { msg: msgInput, user: $user, time: new Date().getTime() };
-        gun.get($chatTopic).set(chat);
+        gun
+          .get($chatTopic)
+          .get(Math.random())
+          .put(chat);
         msgInput = '';
         scrollToBottom();
         e.target.msg.focus();
