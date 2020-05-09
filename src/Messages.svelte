@@ -20,6 +20,7 @@
   let showScrollToBottom;
   let main;
   let isLoading = false;
+  let ref;
 
   // convert key/value object
   // to sorted array of messages (with a max length)
@@ -47,27 +48,48 @@
   });
 
   onMount(() => {
-    isLoading = true;
-    // use settimeout to render UI before loading messages
-    // hide loading spinner, gun's parsing json is not async 😢
-    setTimeout(() => {
-      gun.get($chatTopic).map((val, msgId) => {
-        if (val) {
-          store[msgId] = { msgId, ...val };
-        } else {
-          // null messages are deleted
-          delete store[msgId];
-          // reassign store to trigger svelte's reactivity
-          store = store;
-        }
-      });
-      isLoading = false;
-    }, 0);
+    ref = gun.get($chatTopic);
+    let t;
+    let _store = {};
+
+    let update = (val, msgId) => {
+      if (val) {
+        _store[msgId] = { msgId, ...val };
+      } else {
+        // null messages are deleted
+        delete _store[msgId];
+      }
+
+      if (t) clearTimeout(t);
+
+      isLoading = true;
+
+      t = setTimeout(() => {
+        store = _store;
+        isLoading = false;
+      }, 200); // debounce updates
+    };
+
+    ref.map().once(update);
+
+    // listen only for any deleted messages
+    ref.on(
+      o => {
+        if (!isLoading)
+          for (let key in o) {
+            if (o[key] === null) {
+              delete store[key];
+              store = store;
+            }
+          }
+      },
+      { change: true }
+    );
   });
 
   onDestroy(() => {
     // remove gun listeners
-    gun.get($chatTopic).off();
+    ref.off();
   });
 
   const [send, receive] = crossfade({
@@ -168,10 +190,7 @@
               class="delete"
               on:click|preventDefault={() => {
                 const yes = confirm('Are you sure?');
-                if (yes) gun
-                    .get($chatTopic)
-                    .get(chat.msgId)
-                    .put(null);
+                if (yes) ref.get(chat.msgId).put(null);
               }}
             >
               delete
@@ -189,7 +208,7 @@
       on:submit|preventDefault={e => {
         if (!msgInput || !msgInput.trim()) return;
         const chat = { msg: msgInput, user: $user, time: new Date().getTime() };
-        gun.get($chatTopic).set(chat);
+        ref.get(Math.random()).put(chat);
         msgInput = '';
         scrollToBottom();
         e.target.msg.focus();
