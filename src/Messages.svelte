@@ -154,7 +154,7 @@
       >
         <div class="meta">
           <span class="time">
-            {new Date(parseFloat(chat.time)).toLocaleString('en-US')}
+            {new Date(parseFloat(chat.time)).toLocaleString('en-US', { hour12: false })}
           </span>
           <span class="user">{chat.user}</span>
         </div>
