@@ -69,7 +69,7 @@
           timeout = setTimeout(() => {
             store = _store;
             isLoading = false;
-          }, 100);
+          }, 200);
         } else {
           // null messages are deleted
           delete store[msgId];
