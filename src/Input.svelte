@@ -13,7 +13,7 @@
   export let multiline = false;
 
   // TODO: kinda hacky, on desktop it's more that 40, but calculating chars per line is hard
-  // Something along the lines of this: https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/TextareaAutosize/TextareaAutosize.js
+  // FIX: something along the lines of this: https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/TextareaAutosize/TextareaAutosize.js
   const CHARS_PER_LINE = 40;
 
   function calcRows(v) {
@@ -24,6 +24,19 @@
   }
 
   $: rows = calcRows(value);
+
+  function handleKeyPress(e) {
+    if (e.which === 13 && !e.shiftKey) {
+      // simulate actual submit event when user pressed return
+      // but not on 'soft return'
+      e.target.form.dispatchEvent(
+        new Event("submit", {
+          cancelable: true
+        })
+      );
+      e.preventDefault();
+    }
+  }
 </script>
 
 <div class="input-with-button">
@@ -36,14 +49,7 @@
       {maxLength}
       {name}
       bind:value
-      on:keypress={(e) => {
-        if (e.which === 13 && !e.shiftKey) {
-          e.target.form.dispatchEvent(new Event('submit', {
-              cancelable: true,
-            }));
-          e.preventDefault();
-        }
-      }}
+      on:keypress={handleKeyPress}
       aria-labelledby={ariaLabelledBy}
       aria-label={ariaLabel}
       {placeholder}

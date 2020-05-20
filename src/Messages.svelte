@@ -4,37 +4,50 @@
   import { quintOut } from "svelte/easing";
   import { crossfade } from "svelte/transition";
   import { user, chatTopic } from "./stores.js";
+  import { toHSL } from "./toHSL.js";
   import Page from "./Page.svelte";
   import Nav from "./Nav.svelte";
   import Input from "./Input.svelte";
   import ScrollToBottom from "./ScrollToBottom.svelte";
   import { gun } from "./initGun.js";
-  import Gun from "gun/gun";
 
   const ADD_ON_SCROLL = 50; // messages to add when scrolling to the top
   let showMessages = 100; // initial messages to load
 
   let msgInput;
   let store = {};
+  let chats = [];
   let autoscroll;
   let showScrollToBottom;
   let main;
   let isLoading = false;
 
-  // convert key/value object
-  // to sorted array of messages (with a max length)
-  function toArray(store) {
+  $: {
+    // convert key/value object to sorted array of messages (with a max length)
     const arr = Object.values(store);
     const sorted = arr.sort((a, b) => a.time - b.time);
     const begin = Math.max(0, sorted.length - showMessages);
     const end = arr.length;
-    return arr.slice(begin, end);
+    chats = arr.slice(begin, end);
   }
-
-  $: chats = toArray(store);
 
   function scrollToBottom() {
     main.scrollTo({ left: 0, top: main.scrollHeight });
+  }
+
+  function handleScroll(e) {
+    showScrollToBottom =
+      main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
+    if (!isLoading && main.scrollTop <= main.scrollHeight / 10) {
+      const totalMessages = Object.keys(store).length - 1;
+      if (showMessages >= totalMessages) return;
+      isLoading = true;
+      setTimeout(() => {
+        showMessages += ADD_ON_SCROLL;
+        if (main.scrollTop === 0) main.scrollTop = 1;
+        isLoading = false;
+      }, 200);
+    }
   }
 
   beforeUpdate(() => {
@@ -47,35 +60,28 @@
   });
 
   onMount(async () => {
-    isLoading = true;
     let _store = {};
     let timeout;
     gun
       .get($chatTopic)
       .map()
-      .on(
-        (val, msgId) => {
-          if (val) {
-            isLoading = true;
-            _store[msgId] = { msgId, ...val };
-            // debounce update svelte store to avoid overloading ui
-            if (timeout) clearTimeout(timeout);
-            timeout = setTimeout(() => {
-              store = _store;
-              isLoading = false;
-            }, 100);
-          } else {
-            // null messages are deleted
-            delete store[msgId];
-            // reassign store to trigger svelte's reactivity
-            store = store;
-          }
-        },
-        {
-          change: true
+      .on((val, msgId) => {
+        if (val) {
+          isLoading = true;
+          _store[msgId] = { msgId, ...val };
+          // debounce update svelte store to avoid overloading ui
+          if (timeout) clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            store = _store;
+            isLoading = false;
+          }, 100);
+        } else {
+          // null messages are deleted
+          delete store[msgId];
+          // reassign store to trigger svelte's reactivity
+          store = store;
         }
-      );
-    isLoading = false;
+      });
   });
 
   onDestroy(() => {
@@ -100,59 +106,12 @@
       };
     }
   });
-
-  function toHSL(str) {
-    if (!str) return;
-    const opts = {
-      hue: [60, 360],
-      sat: [75, 100],
-      lum: [70, 71]
-    };
-
-    function range(hash, min, max) {
-      const diff = max - min;
-      const x = ((hash % diff) + diff) % diff;
-      return x + min;
-    }
-
-    let hash = 0;
-    if (str === 0) return hash;
-
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      hash = hash & hash;
-    }
-
-    let h = range(hash, opts.hue[0], opts.hue[1]);
-    let s = range(hash, opts.sat[0], opts.sat[1]);
-    let l = range(hash, opts.lum[0], opts.lum[1]);
-
-    return `hsl(${h}, ${s}%, ${l}%)`;
-  }
 </script>
 
 <Page>
   <Nav backTo="settings" backText="Sign In">Messages</Nav>
 
-  <main
-    bind:this={main}
-    on:scroll={e => {
-      showScrollToBottom = main.scrollHeight - main.offsetHeight > main.scrollTop + 300;
-      if (main.scrollTop <= main.scrollHeight / 10) {
-        if (!isLoading) {
-          const totalMessages = Object.keys(store).length - 1;
-          if (showMessages >= totalMessages) return;
-          isLoading = true;
-          setTimeout(() => {
-            showMessages += ADD_ON_SCROLL;
-            chats = toArray(store);
-            if (main.scrollTop === 0) main.scrollTop = 1;
-            isLoading = false;
-          }, 600);
-        }
-      }
-    }}
-  >
+  <main bind:this={main} on:scroll={handleScroll}>
     {#if isLoading}
       <div class="centered">
         <div class="loadingspinner" />
