@@ -1,5 +1,4 @@
 <script>
-  import { user } from "./stores.js";
   import { fade } from "svelte/transition";
 </script>
 

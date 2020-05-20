@@ -1,16 +1,13 @@
 <script>
-  import { nav } from "./stores.js";
-  export let backTo = null;
+  import { createEventDispatcher } from "svelte";
+  export let showBack = false;
   export let backText = null;
+  const dispatch = createEventDispatcher();
 </script>
 
 <nav>
-  {#if backTo}
-    <button
-      on:click={() => {
-        $nav = backTo;
-      }}
-    >
+  {#if showBack}
+    <button on:click={() => dispatch('back')}>
       <svg
         height="40"
         width="40"
