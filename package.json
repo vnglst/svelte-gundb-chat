@@ -1,5 +1,5 @@
 {
-  "name": "svelte-app",
+  "name": "chat.phrassed",
   "version": "0.8.0",
   "license": "MIT",
   "scripts": {
@@ -22,7 +22,7 @@
     "workbox-cli": "^5.1.3"
   },
   "dependencies": {
-    "gun": "0.2020.520",
+    "gun": "0.2020.116",
     "sirv-cli": "^0.4.4"
   }
 }
