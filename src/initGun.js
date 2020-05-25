@@ -1,8 +1,11 @@
-import Gun from "gun/gun";
-import "gun/lib/radix";
-import "gun/lib/radisk";
-import "gun/lib/rindexed";
-import "gun/lib/webrtc";
+// HACK: loading gun with js imports does not work reliably, but script tags do
+
+// import Gun from "gun/gun";
+// import "gun/lib/radix";
+// import "gun/lib/radisk";
+// import "gun/lib/rindexed";
+// import "gun/lib/store";
+// import "gun/lib/webrtc";
 
 let peers;
 
@@ -26,6 +29,7 @@ const gun = new Gun({
   localStorage: false,
 });
 
+// attaching gun to window for testing purposes
 window.gun = gun;
 
 export { gun };

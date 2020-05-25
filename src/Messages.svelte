@@ -1,6 +1,6 @@
 <script>
   import { beforeUpdate, afterUpdate, onMount, onDestroy } from "svelte";
-  import { chatTopic } from "./stores.js";
+  import { chatTopic, user } from "./stores.js";
   import { gun } from "./initGun.js";
   import ScrollToBottom from "./ScrollToBottom.svelte";
   import MessageInput from "./MessageInput.svelte";
@@ -43,6 +43,21 @@
         isLoading = false;
       }, 200);
     }
+  }
+
+  function handleMessage(msg) {
+    const now = new Date().getTime();
+    gun
+      .get($chatTopic)
+      .get(now)
+      .put({ msg, user: $user, time: now });
+  }
+
+  function handleDelete(msgId) {
+    gun
+      .get($chatTopic)
+      .get(msgId)
+      .put(null);
   }
 
   beforeUpdate(() => {
@@ -89,10 +104,20 @@
   {#if isLoading}
     <Spinner />
   {/if}
-  <MessageList {chats} />
+  <MessageList
+    {chats}
+    on:delete={e => {
+      handleDelete(e.detail);
+    }}
+  />
 </main>
 
-<MessageInput on:scrollToBottom={scrollToBottom} />
+<MessageInput
+  on:message={e => {
+    handleMessage(e.detail);
+    scrollToBottom();
+  }}
+/>
 
 {#if showScrollToBottom}
   <ScrollToBottom onScroll={scrollToBottom} />
