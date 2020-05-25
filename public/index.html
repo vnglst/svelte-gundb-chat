@@ -23,10 +23,12 @@
     <!-- HACK: loading gun with js imports does not work reliably, script tags do -->
     <script defer src="./gun.js"></script>
     <script defer src="./lib/webrtc.js"></script>
-    <script defer src="./lib/radix.js"></script>
-    <script defer src="./lib/radisk.js"></script>
-    <script defer src="./lib/store.js"></script>
-    <script defer src="./lib/rindexed.js"></script>
+    
+    <!-- offline update don't seem to work with indexedDB plugin enabled -->
+    <!-- <script defer src="./lib/radix.js"></script> -->
+    <!-- <script defer src="./lib/radisk.js"></script> -->
+    <!-- <script defer src="./lib/store.js"></script> -->
+    <!-- <script defer src="./lib/rindexed.js"></script> -->
 
     <script defer src="/build/bundle.js"></script>
   </head>

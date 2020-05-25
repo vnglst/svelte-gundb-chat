@@ -25,8 +25,9 @@ if (process.env.NODE_ENV === "development") {
 
 const gun = new Gun({
   peers,
-  store: RindexedDB(),
-  localStorage: false,
+  // // offline update don't seem to work with indexedDB plugin enabled
+  // store: RindexedDB(),
+  // localStorage: false,
 });
 
 // attaching gun to window for testing purposes
