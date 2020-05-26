@@ -1,6 +1,6 @@
 {
   "name": "chat.phrassed",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "license": "MIT",
   "scripts": {
     "build": "rollup -c && workbox injectManifest workbox-config.js",
