@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import { user, chatTopic } from "./stores.js";
+  import { user } from "./stores.js";
   import Input from "./ui/Input.svelte";
   import { gun } from "./initGun.js";
 
@@ -14,13 +14,8 @@
     autocomplete="off"
     on:submit|preventDefault={e => {
       if (!msgInput || !msgInput.trim()) return;
-      const chat = { msg: msgInput, user: $user, time: new Date().getTime() };
-      gun
-        .get($chatTopic)
-        .get(Math.random())
-        .put(chat);
+      dispatch('message', msgInput);
       msgInput = '';
-      dispatch('scrollToBottom');
       e.target.msg.focus();
     }}
   >

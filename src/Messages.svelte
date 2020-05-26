@@ -1,6 +1,6 @@
 <script>
   import { beforeUpdate, afterUpdate, onMount, onDestroy } from "svelte";
-  import { chatTopic } from "./stores.js";
+  import { chatTopic, user } from "./stores.js";
   import { gun } from "./initGun.js";
   import ScrollToBottom from "./ScrollToBottom.svelte";
   import MessageInput from "./MessageInput.svelte";
@@ -16,14 +16,21 @@
   let showScrollToBottom;
   let main;
   let isLoading = false;
+  let timeout;
 
   $: {
-    // convert key/value object to sorted array of messages (with a max length)
-    const arr = Object.values(store);
-    const sorted = arr.sort((a, b) => a.time - b.time);
-    const begin = Math.max(0, sorted.length - showMessages);
-    const end = arr.length;
-    chats = arr.slice(begin, end);
+    isLoading = true;
+    if (timeout) clearTimeout(timeout);
+    // debounce update svelte store to avoid overloading ui
+    timeout = setTimeout(() => {
+      // convert key/value object to sorted array of messages (with a max length)
+      const arr = Object.values(store);
+      const sorted = arr.sort((a, b) => a.time - b.time);
+      const begin = Math.max(0, sorted.length - showMessages);
+      const end = arr.length;
+      chats = arr.slice(begin, end);
+      isLoading = false;
+    }, 200);
   }
 
   function scrollToBottom() {
@@ -45,31 +52,30 @@
     }
   }
 
-  beforeUpdate(() => {
-    autoscroll =
-      main && main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
-  });
+  function handleNewMessage(msg) {
+    const now = new Date().getTime();
+    const msgId = Gun.text.random();
+    const message = { msg, user: $user, time: now };
+    gun
+      .get($chatTopic)
+      .get(msgId)
+      .put(message);
+  }
 
-  afterUpdate(() => {
-    if (autoscroll) main.scrollTo(0, main.scrollHeight);
-  });
+  function handleDelete(msgId) {
+    gun
+      .get($chatTopic)
+      .get(msgId)
+      .put(null);
+  }
 
   onMount(async () => {
-    let _store = {};
-    let timeout;
     gun
       .get($chatTopic)
       .map()
       .on((val, msgId) => {
         if (val) {
-          isLoading = true;
-          _store[msgId] = { msgId, ...val };
-          // debounce update svelte store to avoid overloading ui
-          if (timeout) clearTimeout(timeout);
-          timeout = setTimeout(() => {
-            store = _store;
-            isLoading = false;
-          }, 200);
+          store[msgId] = { msgId, ...val };
         } else {
           // null messages are deleted
           delete store[msgId];
@@ -77,6 +83,15 @@
           store = store;
         }
       });
+  });
+
+  beforeUpdate(() => {
+    autoscroll =
+      main && main.offsetHeight + main.scrollTop > main.scrollHeight - 50;
+  });
+
+  afterUpdate(() => {
+    if (autoscroll) main.scrollTo(0, main.scrollHeight);
   });
 
   onDestroy(() => {
@@ -89,10 +104,20 @@
   {#if isLoading}
     <Spinner />
   {/if}
-  <MessageList {chats} />
+  <MessageList
+    {chats}
+    on:delete={e => {
+      handleDelete(e.detail);
+    }}
+  />
 </main>
 
-<MessageInput on:scrollToBottom={scrollToBottom} />
+<MessageInput
+  on:message={e => {
+    handleNewMessage(e.detail);
+    scrollToBottom();
+  }}
+/>
 
 {#if showScrollToBottom}
   <ScrollToBottom onScroll={scrollToBottom} />

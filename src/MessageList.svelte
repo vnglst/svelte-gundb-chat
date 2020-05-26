@@ -1,10 +1,12 @@
 <script>
+  import { createEventDispatcher } from "svelte";
   import { fade, fly } from "svelte/transition";
-  import { user, chatTopic } from "./stores.js";
+  import { user } from "./stores.js";
   import { quintOut } from "svelte/easing";
   import { crossfade } from "svelte/transition";
   import { toHSL } from "./toHSL.js";
-  import { gun } from "./initGun.js";
+
+  const dispatch = createEventDispatcher();
 
   export let chats;
 
@@ -51,10 +53,7 @@
           class="delete"
           on:click|preventDefault={() => {
             const yes = confirm('Are you sure?');
-            if (yes) gun
-                .get($chatTopic)
-                .get(chat.msgId)
-                .put(null);
+            if (yes) dispatch('delete', chat.msgId);
           }}
         >
           delete

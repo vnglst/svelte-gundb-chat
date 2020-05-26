@@ -1,7 +1,4 @@
 import Gun from "gun/gun";
-import "gun/lib/radix";
-import "gun/lib/radisk";
-import "gun/lib/rindexed";
 import "gun/lib/webrtc";
 
 let peers;
@@ -22,10 +19,9 @@ if (process.env.NODE_ENV === "development") {
 
 const gun = new Gun({
   peers,
-  store: RindexedDB(),
-  localStorage: false,
 });
 
+// attaching gun to window for testing purposes
 window.gun = gun;
 
 export { gun };
