@@ -1,9 +1,5 @@
 import Gun from "gun/gun";
 import "gun/lib/webrtc";
-// import "gun/lib/radix";
-// import "gun/lib/radisk";
-// import "gun/lib/rindexed";
-// import "gun/lib/store";
 
 let peers;
 
@@ -23,9 +19,6 @@ if (process.env.NODE_ENV === "development") {
 
 const gun = new Gun({
   peers,
-  // // offline update don't seem to work with indexedDB plugin enabled
-  // store: RindexedDB(),
-  // localStorage: false,
 });
 
 // attaching gun to window for testing purposes
