@@ -54,12 +54,8 @@
 
   function handleNewMessage(msg) {
     const now = new Date().getTime();
-    const msgId = Gun.text.random();
     const message = { msg, user: $user, time: now };
-    gun
-      .get($chatTopic)
-      .get(msgId)
-      .put(message);
+    gun.get($chatTopic).set(message);
   }
 
   function handleDelete(msgId) {
