@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === "development") {
     "https://gun-us.herokuapp.com/gun",
     "https://gun-eu.herokuapp.com/gun",
     // My own relay peer
-    "https://phrassed.com/gun",
+    // "https://phrassed.com/gun",
   ];
 }
 
