@@ -1,5 +1,11 @@
 import Gun from "gun/gun";
 import "gun/lib/webrtc";
+import "gun/lib/radix";
+import "gun/lib/radisk";
+import "gun/lib/rindexed";
+// using store doesn't work, fs not supported
+// is this required for indexedDB?
+// import "gun/lib/store";
 
 let peers;
 
@@ -19,6 +25,8 @@ if (process.env.NODE_ENV === "development") {
 
 const gun = new Gun({
   peers,
+  store: RindexedDB(),
+  localStorage: false,
 });
 
 // attaching gun to window for testing purposes
